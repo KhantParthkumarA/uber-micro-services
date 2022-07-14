@@ -73,8 +73,15 @@ const UserSchema = mongoose.Schema({
     type: Number
   },
   oAuth: {
-    type: Array
+    clientId: {
+      type: String
+    },
+    provider: {
+      type: String
+    }
   }
+
+
 
 });
 

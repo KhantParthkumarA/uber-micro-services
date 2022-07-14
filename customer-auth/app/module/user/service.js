@@ -75,3 +75,54 @@ export async function login(body) {
     throw err;
   }
 }
+
+const getOneUserByFilter = async (query) => {
+  try {
+    const result = await User.findOne(query).select('-password').lean();
+    return result
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function oAuth(body) {
+  try {
+    const query = [{ 'oAuth.clientId': body.id, 'oAuth.provider': body.provider }];
+    if (!body.id || !body.provider) {
+      throw new Error("Something went wrong");
+    }
+    if (body.email) {
+      query.push({ email: body.email })
+    }
+    const user = await getOneUserByFilter({ $or: query })
+
+    if (user) {
+      return {
+        success,
+        message: `You have successfully login`,
+        data: await setAuth(user),
+      }
+    }
+
+    let newUser = new User();
+    newUser.firstname = body.firstname;
+    newUser.lastname = body.lastname;
+    newUser.email = body.email.trim();
+    newUser.phoneNumber = body.phoneNumber;
+    newUser.oAuth.clientId = body.id;
+    newUser.oAuth.provider = body.provider;
+    await newUser.save();
+    return {
+      success,
+      message: `You have successfully login`,
+      data: await setAuth(newUser),
+    }
+
+
+
+
+
+  } catch (e) {
+    throw e;
+  }
+}

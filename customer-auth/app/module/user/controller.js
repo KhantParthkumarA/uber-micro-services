@@ -1,3 +1,4 @@
+import { func } from "joi";
 import * as service from "./service";
 
 //Here is where you write your controller
@@ -15,6 +16,14 @@ export async function signup(req, res, next) {
 export async function login(req, res, next) {
   try {
     return res.status(200).json(await service.login(req.body));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function oAuth(req, res, next) {
+  try {
+    return res.status(200).json(await service.oAuth(req.body));
   } catch (err) {
     next(err);
   }
