@@ -28,3 +28,11 @@ export async function oAuth(req, res, next) {
     next(err);
   }
 }
+
+export async function loginVerify(req, res, next) {
+  try {
+    return res.status(200).json(await service.loginVerify(req.body));
+  } catch (err) {
+    next(err);
+  }
+}

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { func } from "joi";
 // import { USERTYPE } from "../../utils/constant";
 const jwt = require('jsonwebtoken');
+const { sentEmail } = require('./../../utils/sentMail');
 
 //Here is where you write the business logic
 
@@ -44,37 +45,115 @@ export async function signup(body) {
   }
 }
 
+
+const generateOtp = (to, subject, otp) => {
+  return Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
+}
+
+
+
 export async function login(body) {
   try {
     const email = body.email;
+    const phoneNumber = body.phoneNumber;
     const password = body.password;
 
-    if (!email || !password) {
-      throw new Error("Please provide email and password");
+    if (email && password) {
+      const user = await User.findOne({ email: email }).select('+password');
+
+      if (!user) {
+        throw new Error("Incorrect email and password");
+      }
+
+      const correct = await user.correctPassword(password, user.password);
+
+      if (!correct) {
+        throw new Error("Incorrect email and password");
+      }
+
+      return {
+        success,
+        message: `You have successfully login`,
+        data: await setAuth(user),
+      };
+    }
+    else if (email && !phoneNumber) {
+      const otp = generateOtp();
+      await sentEmail(email, "Verification Code", `<p>your verification code is ${otp}<p>`);
+
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        let newUser = new User();
+        newUser.email = email;
+        newUser.otp = otp;
+        await newUser.save();
+      }
+      else {
+        await user.updateOne({ otp: otp });
+      }
+
+      return {
+        success,
+        message: `Otp sent successfully on your email`,
+      }
+    }
+    else if (phoneNumber && !email) {
+      const otp = generateOtp();
+      // send otp to the mobile number
+      const user = await User.findOne({ phoneNumber: phoneNumber });
+      if (!user) {
+        let newUser = new User();
+        newUser.phoneNumber = phoneNumber;
+        newUser.otp = otp;
+        await newUser.save();
+      }
+      else {
+        await user.updateOne({ otp: otp });
+      }
+
+      return {
+        success,
+        message: `Otp sent successfully on your phoneNumber`,
+      }
     }
 
-    const user = await User.findOne({ email: email }).select('+password');
-    // console.log(email);
-    // console.log(password);
-    if (!user) {
-      throw new Error("Incorrect email and password");
-    }
-
-    const correct = await user.correctPassword(password, user.password);
-    // console.log(correct);
-    if (!correct) {
-      throw new Error("Incorrect email and password");
-    }
-
-    return {
-      success,
-      message: `You have successfully login`,
-      data: await setAuth(user),
-    };
   } catch (err) {
     throw err;
   }
 }
+
+
+export async function loginVerify(body) {
+  try {
+    const email = body.email;
+    const phoneNumber = body.phoneNumber;
+    const otp = body.otp;
+
+    let user;
+
+    if (email && !phoneNumber) {
+      user = await User.findOne({ email: email });
+    }
+    if (phoneNumber && !email) {
+      const user = await User.findOne({ phoneNumber: phoneNumber });
+    }
+
+    if (!user) {
+      throw new Error("Something went wrong");
+    }
+
+    if (otp === user.otp) {
+      return {
+        success,
+        message: `You have successfully login`,
+        data: await setAuth(user),
+      }
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+
 
 const getOneUserByFilter = async (query) => {
   try {

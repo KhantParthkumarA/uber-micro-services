@@ -3,7 +3,7 @@ import { date } from "joi";
 import bcrypt from "bcrypt";
 import { compare } from "bcryptjs";
 import Jwt from "jsonwebtoken";
-// import { USERTYPE } from "../../utils/constant";
+import { USERTYPE } from "../../utils/constant";
 
 //Here you define your model
 const UserSchema = mongoose.Schema({
@@ -18,7 +18,6 @@ const UserSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     lowercase: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
@@ -48,7 +47,7 @@ const UserSchema = mongoose.Schema({
   status: {
     type: String,
     // enum: Object.keys(ACCOUNT_STATUS),
-    // default: ACCOUNT_STATUS.UNVERIFIED,
+    default: ACCOUNT_STATUS.UNVERIFIED,
   },
   token: {
     type: String,
@@ -79,10 +78,10 @@ const UserSchema = mongoose.Schema({
     provider: {
       type: String
     }
+  },
+  otp: {
+    type: Number
   }
-
-
-
 });
 
 
