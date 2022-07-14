@@ -1,0 +1,34 @@
+{
+  "name": "paymax",
+  "version": "1.0.0",
+  "description": "Paymax",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config index.js",
+    "prod": "node -r dotenv/config index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "paymax"
+  ],
+  "author": "Abiodun",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "esm": "^3.2.25",
+    "express": "^4.18.1",
+    "iyasunday": "^1.1.4",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.4.4",
+    "nodemon": "^2.0.19",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0"
+  }
+}
