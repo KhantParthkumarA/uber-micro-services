@@ -12,9 +12,3 @@ route.post(
     controller.create);
 
 export default route;
-
-
-
-
-
-
