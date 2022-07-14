@@ -3,7 +3,7 @@ import { date } from "joi";
 import bcrypt from "bcrypt";
 import { compare } from "bcryptjs";
 import Jwt from "jsonwebtoken";
-import { USERTYPE } from "../../utils/constant";
+import { ACCOUNT_STATUS } from "../../utils/constant";
 
 //Here you define your model
 const UserSchema = mongoose.Schema({

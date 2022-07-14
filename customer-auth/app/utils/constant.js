@@ -1,0 +1,6 @@
+const ACCOUNT_STATUS = {
+    "VERIFIED": "VERIFIED",
+    "UNVERIFIED": "UNVERIFIED"
+}
+
+module.exports = { ACCOUNT_STATUS }
