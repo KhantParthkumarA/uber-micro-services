@@ -107,3 +107,65 @@ export async function priceEstimate(body) {
     throw err;
   }
 };
+
+
+
+
+
+export async function timeEstimate(body) {
+  try {
+    // const origin_lat = body.origin_lat;
+    // const origin_lng = body.origin_lng;
+    // const product_lat = body.product_lat;
+    // const product_lng = body.product_lng;
+    // const productId = body.productId;
+
+    const data = {
+      "destination_addresses": ["Lexington, MA, USA", "Concord, MA, USA"],
+      "origin_addresses": ["Boston, MA, USA", "Charlestown, Boston, MA, USA"],
+      "rows":
+        [
+          {
+            "elements":
+              [
+                {
+                  "distance": { "text": "33.3 km", "value": 33253 },
+                  "duration": { "text": "27 mins", "value": 1620 },
+                  "duration_in_traffic": { "text": "34 mins", "value": 2019 },
+                  "status": "OK",
+                },
+              ],
+          },
+          {
+            "elements":
+              [
+                {
+                  "distance": { "text": "31.1 km", "value": 31100 },
+                  "duration": { "text": "26 mins", "value": 1543 },
+                  "duration_in_traffic": { "text": "29 mins", "value": 1754 },
+                  "status": "OK",
+                },
+              ],
+          },
+        ],
+      "status": "OK",
+    }
+    const product = await Product.findOne({ productID: "ax1234" });
+    let response = [];
+    for (let i = 0; i < data.rows.length; i++) {
+      const duration = data.rows[i].elements[0].duration.text;
+      const trafic_duration = data.rows[i].elements[0].duration_in_traffic.text;
+      let obj = { ...product._doc, "time_duration": duration, "traffic_duration": trafic_duration };
+      response.push(obj);
+    }
+    return {
+      success,
+      message: `Time estimate get Successfully`,
+      length: response.length,
+      data: response,
+
+    };
+  } catch (err) {
+    throw err;
+  }
+};
