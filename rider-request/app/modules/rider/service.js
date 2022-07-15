@@ -90,7 +90,7 @@ export async function priceEstimate(body) {
 
         finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees;
 
-        let obj = { ...product[j]._doc, "priceEstimate": finalFare.toFixed(2) };
+        let obj = { ...product[j]._doc, "priceEstimate": finalFare.toFixed(2), "ride_distance": distance, "ride_duration": duration };
         response.push(obj);
       }
 
