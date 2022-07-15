@@ -1,9 +1,9 @@
-const { errorMessage, joiValidator } = require("iyasunday");
-const user = require("../module/user");
+const { errorMessage } = require("iyasunday");
+const product = require("../module/product");
 
 module.exports = (app) => {
-  const version = "/v1";
-  app.use(version, user);
+  const version = "/v1/admin";
+  app.use(version, product);
 
 
   app.use((err, req, res, next) => {

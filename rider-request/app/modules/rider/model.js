@@ -1,32 +1,19 @@
-import mongoose from "mongoose";
-import { date } from "joi";
+import mongoose from 'mongoose';
 import bcrypt from "bcrypt";
-import { compare } from "bcryptjs";
-import Jwt from "jsonwebtoken";
-import { ACCOUNT_STATUS } from "../../utils/constant";
 
-//Here you define your model
-const UserSchema = mongoose.Schema({
-  userID: {
-    type: String,
-  },
-  firstname: {
-    type: String,
-  },
-  lastname: {
-    type: String,
-  },
+const RiderSchema = mongoose.Schema({
+  riderID: String,
+  riderFirstName: String,
+  riderLastName: String,
   email: {
     type: String,
+    required: true,
     lowercase: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "Please fill a valid email address",
     ],
     unique: [true, "User with email already exists"],
-  },
-  username: {
-    type: String,
   },
   phoneNumber: {
     type: String,
@@ -38,16 +25,15 @@ const UserSchema = mongoose.Schema({
     select: false,
   },
   userType: {
-    type: String,
-    // enum: Object.keys(USERTYPE),
-  },
-  permissions: {
-    type: Array,
+    type: String
   },
   status: {
     type: String,
-    enum: Object.keys(ACCOUNT_STATUS),
-    default: ACCOUNT_STATUS.UNVERIFIED,
+    enum: ['ACTIVE', 'INACTIVE'],
+    default: 'INACTIVE',
+  },
+  permissions: {
+    type: Array,
   },
   token: {
     type: String,
@@ -85,7 +71,7 @@ const UserSchema = mongoose.Schema({
 });
 
 
-UserSchema.pre('save', async function (next) {
+RiderSchema.pre('save', async function (next) {
   // if password is not modifies
   if (!this.isModified('password')) {
     return next();
@@ -95,8 +81,8 @@ UserSchema.pre('save', async function (next) {
   next();
 })
 
-UserSchema.methods.correctPassword = async function (password, userPassword) {
+RiderSchema.methods.correctPassword = async function (password, userPassword) {
   return await bcrypt.compare(password, userPassword);
 };
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model('Rider', RiderSchema);
