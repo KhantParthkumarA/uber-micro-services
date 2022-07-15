@@ -7,7 +7,7 @@ import * as controller from './controller';
 const route = Router();
 
 route.post('/create', controller.create);
-
+route.get('/estimates/price', controller.getPriceEastimate)
 export default route;
 
 

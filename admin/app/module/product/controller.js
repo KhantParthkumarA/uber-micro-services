@@ -36,7 +36,7 @@ export async function deleteProduct(req, res, next) {
 }
 export async function updateProduct(req, res, next) {
   try {
-    res.status(200).json(await service.updateProduct(req.params.id));
+    res.status(200).json(await service.updateProduct(req.params.id, req.body));
   } catch (err) {
     next(err);
   }

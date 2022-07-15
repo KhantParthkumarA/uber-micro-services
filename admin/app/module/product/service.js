@@ -11,7 +11,7 @@ export async function createProduct(body) {
       throw new ExistsError(`${body.productID} already Exist`);
     }
 
-    const product = await Product.save(body);
+    const product = await Product.create(body);
 
     return {
       success,
@@ -67,9 +67,9 @@ export async function deleteProduct(id) {
   }
 }
 
-export async function updateProduct(id) {
+export async function updateProduct(id, body) {
   try {
-    const product = await Product.updateOne({ productID: id }, { body });
+    const product = await Product.findOneAndUpdate({ productID: id }, { ...body }, { new: true });
     return {
       success,
       message: `You have successfully update your product`,

@@ -36,3 +36,19 @@ export async function loginVerify(req, res, next) {
     next(err);
   }
 }
+
+export async function getAllProduct(req, res, next) {
+  try {
+    res.status(200).json(await service.getAllProduct());
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getProduct(req, res, next) {
+  try {
+    res.status(200).json(await service.getProduct(req.params.id));
+  } catch (err) {
+    next(err);
+  }
+}
