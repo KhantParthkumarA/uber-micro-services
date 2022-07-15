@@ -1,4 +1,4 @@
-import User from "./model";
+const { User, Product } = require('./model')
 import { success, ExistsError } from "iyasunday";
 import bcrypt from "bcrypt";
 import { func } from "joi";
@@ -204,5 +204,35 @@ export async function oAuth(body) {
 
   } catch (e) {
     throw e;
+  }
+}
+
+export async function getAllProduct() {
+  try {
+
+    const product = await Product.find();
+    return {
+      success,
+      message: `You have successfully get all product`,
+      data: product,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function getProduct(id) {
+  try {
+    const product = await Product.findOne({ productID: id });
+    if (!product) {
+      throw new ExistsError(`${body.productID} product not Exist`);
+    }
+    return {
+      success,
+      message: `You have successfully get your product`,
+      data: product,
+    };
+  } catch (err) {
+    throw err;
   }
 }

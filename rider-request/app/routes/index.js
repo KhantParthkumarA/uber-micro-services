@@ -1,9 +1,9 @@
 import { errorMessage } from "iyasunday";
-import Insurance from "../modules/insurancePackage";
-
+// import Insurance from "../modules/insurancePackage";
+import Rider from "../modules/rider";
 export default (app) => {
   const version = "/v1";
-  app.use(version, Insurance);
+  app.use(version, Rider);
 
 
   app.use((err, req, res, next) => {
@@ -17,9 +17,8 @@ export default (app) => {
     res
       .status(404)
       .json({
-        message: `Requested route ( ${req.get("HOST")}${
-          req.originalUrl
-        } ) not found`,
+        message: `Requested route ( ${req.get("HOST")}${req.originalUrl
+          } ) not found`,
       });
   });
 };

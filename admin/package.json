@@ -1,29 +1,35 @@
 {
-  "name": "cva-insurance",
+  "name": "paymax",
   "version": "1.0.0",
-  "description": "an insurance technology platform",
+  "description": "Paymax",
   "main": "index.js",
-  "module": "main.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config index.js",
     "prod": "node -r dotenv/config index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "insurtech"
+    "paymax"
   ],
   "author": "Abiodun",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "dotenv": "^14.2.0",
+    "dotenv": "^10.0.0",
     "esm": "^3.2.25",
     "express": "^4.18.1",
-    "iyasunday": "^1.0.74",
-    "joi": "^17.5.0",
-    "mongoose": "^6.1.4",
-    "nodemon": "^2.0.15"
+    "iyasunday": "^1.1.4",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.4.4",
+    "nodemailer": "^6.7.7",
+    "nodemon": "^2.0.19",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0"
   }
 }
