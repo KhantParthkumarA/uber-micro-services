@@ -10,7 +10,10 @@ export default (app) => {
     if (err) {
       res.status(err.httpStatusCode || 500).json(errorMessage(err));
     }
-    return next();
+    else {
+      return next();
+    }
+
   });
 
   app.use((req, res) => {
