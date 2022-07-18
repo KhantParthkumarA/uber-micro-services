@@ -67,7 +67,8 @@ const RiderSchema = mongoose.Schema({
   },
   otp: {
     type: Number
-  }
+  },
+  favouriteDriver: Array
 });
 
 
@@ -114,11 +115,43 @@ const ProductSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  }
+  },
 });
+
+
+const FairSchema = new mongoose.Schema({
+  value: Number,
+  display: String,
+  currency_code: String,
+  trip: {
+    distance_unit: String,
+    duration_estimate: Number,
+    distance_estimate: Number
+  },
+  pickup_estimate: Number,
+  breakdown: Array,
+})
+
+const RequestSchema = new mongoose.Schema({
+  productID: Number,
+  status: String,
+  vehicle: Object,
+  driver: Object,
+  location: Object,
+  eta: Number,
+  surge_multiplier: Number,
+  fair_id: String,
+  waitingCharge: {
+    minute: Number,
+    freeMinute: Number,
+    charge: Number
+  }
+})
 
 const Rider = mongoose.model('Rider', RiderSchema);
 const Product = mongoose.model('Product', ProductSchema);
+const Fair = mongoose.model('Fair', FairSchema);
+const Requests = mongoose.model('Requests', RequestSchema);
 // export default mongoose.model('Rider', RiderSchema);
 
-module.exports = { Rider, Product };
+module.exports = { Rider, Product, Fair, Requests };
