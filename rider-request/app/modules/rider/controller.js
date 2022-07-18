@@ -98,9 +98,33 @@ export async function getReceipt(req, res, next) {
     }
 }
 
-export async function makeCall(req, res, next) {
+export async function makeCalls(req, res, next) {
     try {
         return res.status(200).json(await makeCall(req.body.phoneNo));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function heatmapData(req, res, next) {
+    try {
+        return res.status(200).json(await service.getHeatMapData());
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function addfavDriver(req, res, next) {
+    try {
+        return res.status(200).json(await service.pushFavDriver(req.params.rider_id, req.body.driver_id));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function updateWaitingCharges(req, res, next) {
+    try {
+        return res.status(200).json(await service.updateWaitingCharge(req.params.rider_id, req.body.minute));
     } catch (err) {
         next(err);
     }

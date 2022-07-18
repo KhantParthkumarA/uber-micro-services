@@ -15,14 +15,16 @@ route.get('/requests/current', controller.getCurrentRequest);
 route.patch('/requests/current', controller.updateCurrentRequest);
 route.delete('/requests/current', controller.deleteCurrentRequest);
 
-
-
 route.get('/requests/:request_id', controller.getRequest)
 route.patch('/requests/:request_id', controller.updateRequest)
 route.delete('/requests/:request_id', controller.deleteRequest)
 route.get('/requests/:request_id/receipt', controller.getReceipt);
 
-route.post('/makeCall', controller.makeCall);
+route.post('/makeCall', controller.makeCalls);
+
+route.get('/heatMap', controller.heatmapData);
+route.patch('/favouriteDriver/:rider_id', controller.addfavDriver)
+route.patch('/waitingCharge/:rider_id', controller.updateWaitingCharges)
 export default route;
 
 

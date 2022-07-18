@@ -116,11 +116,43 @@ export async function timeEstimate(body) {
 };
 
 
+const tollFees = async (origin, destinations, travel_mode, emission_type, toll_passes) => {
+  try {
 
+    // const url = `https://routespreferred.googleapis.com/v1alpha:computeRoutes?key=${process.env.GOOGLE_MAP_API_KEY}`;
+    // const body = {
+    //   "origin": {
+    //     "location": {
+    //       "lat_lng": origin
+    //     }
+    //   },
+    //   "destination": {
+    //     "location": {
+    //       "lat_lng": destinations
+    //     }
+    //   },
+    //   "travel_mode": travel_mode,
+    //   "route_modifiers": {
+    //     "vehicle_info": {
+    //       "emission_type": emission_type
+    //     },
+    //     "toll_passes": toll_passes
+    //   }
+    // }
+    // const tollData = await axios.post(url, body);
 
-const findCost = (baseFare, ride_duration, cost_per_minute, ride_distance, cost_per_distance, Surge_Price, booking_fees) => {
+    // const toll = tollData.routes[0].travelAdvisory.tollInfo.estimatedPrice.units;
+    // return toll;
+    return 10;
+  }
+  catch (err) {
+    throw err;
+  }
+}
 
-  let finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees;
+const findCost = (baseFare, ride_duration, cost_per_minute, ride_distance, cost_per_distance, Surge_Price, booking_fees, toll) => {
+
+  let finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees + toll;
   return finalFare;
 }
 
@@ -168,7 +200,15 @@ export async function rideRequestEstimate(body) {
     //   Surge_Price=1.5
     // }
 
-    const ride_cost = findCost(base, duration_value, cost_per_minute, distance_value, cost_per_distance, Surge_Price, booking_fees);
+    const toll = await tollFees({
+      "latitude": start_lat,
+      "longitude": start_lng
+    }, {
+      "latitude": end_lat,
+      "longitude": end_lng
+    }, "DRIVE", "GASOLINE", "US_WA_GOOD_TO_GO")
+
+    const ride_cost = findCost(base, duration_value, cost_per_minute, distance_value, cost_per_distance, Surge_Price, booking_fees, toll);
 
 
     // const pickup_estimate = distance_duration({ "lat": start_lat, "lng": start_lng }, { "lat": end_lat, "lng": end_lng })
@@ -362,6 +402,82 @@ export async function getReceipt(request_id) {
       message: `Receipt get Successfully`,
       obj
 
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function getHeatMapData(request_id) {
+  try {
+
+    const data = await Requests.find();
+    console.log(data);
+    let response = [];
+
+    data.forEach(element => {
+      response.push(element.location.start);
+    });
+
+    return {
+      success,
+      message: `Get heatmap data Successfully`,
+      response
+
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function pushFavDriver(rider_id, driver_id) {
+  try {
+
+    const rider = await Rider.findOne({ _id: rider_id });
+
+    const favRider = rider.favouriteDriver;
+    if (!favRider.includes(driver_id)) {
+      favRider.push(driver_id);
+      rider.favouriteDriver = favRider;
+      await Rider.findOneAndUpdate({ _id: rider_id }, rider, { new: true });
+
+    }
+
+    return {
+      success,
+      message: `Favourite driver add Successfully`,
+      rider
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function updateWaitingCharge(rider_id, minute) {
+  try {
+
+    const freeMinute = 10; // get from admin side
+    const charge = 0.5 //get from admin side
+
+    let obj = {
+      "minute": minute,
+      "freeMinute": freeMinute,
+      "charge": charge
+    }
+
+    const rider = await Requests.update({ _id: rider_id }, {
+      $set: {
+        waitingCharge: obj
+      }
+    })
+
+    return {
+      success,
+      message: `Update waiting charge Successfully`,
+      rider
     };
   } catch (err) {
     throw err;

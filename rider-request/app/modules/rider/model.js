@@ -67,7 +67,8 @@ const RiderSchema = mongoose.Schema({
   },
   otp: {
     type: Number
-  }
+  },
+  favouriteDriver: Array
 });
 
 
@@ -114,7 +115,7 @@ const ProductSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  }
+  },
 });
 
 
@@ -128,7 +129,7 @@ const FairSchema = new mongoose.Schema({
     distance_estimate: Number
   },
   pickup_estimate: Number,
-  breakdown: Array
+  breakdown: Array,
 })
 
 const RequestSchema = new mongoose.Schema({
@@ -139,7 +140,12 @@ const RequestSchema = new mongoose.Schema({
   location: Object,
   eta: Number,
   surge_multiplier: Number,
-  fair_id: String
+  fair_id: String,
+  waitingCharge: {
+    minute: Number,
+    freeMinute: Number,
+    charge: Number
+  }
 })
 
 const Rider = mongoose.model('Rider', RiderSchema);
