@@ -1,6 +1,8 @@
 import { success, ExistsError, AuthenticationError } from "iyasunday";
 const axios = require('axios');
-const { Rider, Product, Fair, Requests } = require("./model")
+const { Rider, Product, Fair, Requests, Subscription } = require("./model")
+const { createCustomer } = require('./stripeService');
+const { sentEmail } = require('./../utils/sentMail');
 
 export async function create(body) {
   try {
@@ -481,5 +483,72 @@ export async function updateWaitingCharge(rider_id, minute) {
     };
   } catch (err) {
     throw err;
+  }
+};
+
+
+export async function subscribePlan(body, user) {
+  try {
+    const userObj = user
+    const subscriptionDetails = await Subscription.findOne({ _id: body.id })
+    if (!subscriptionDetails) {
+      throw Error("Subscription plan not found");
+    }
+
+
+    let body = {};
+    let subscription;
+
+    if (body.inAppToken) {
+      body = {
+        subscriptions: body.subscription,
+        inAppToken: body.inAppToken
+      }
+    } else {
+      if (!userObj.stripe.customerId) {
+        const customer = await createCustomer(userObj.email, body.token)
+        userObj.stripe.customerId = customer.id
+
+        // update user with stripe customer id
+        // await usersService.updateUser({ 'stripe.customerId': customer.id }, { _id: userObj._id })
+      }
+
+
+      subscription = !body.inAppToken && await stripeSubscriptionService.createSubscription(subscriptionDetails.plan_id, userObj.stripeCustomerId, body.paymentMethod)
+      /** app subscription includes the inAppToken */
+      body = {
+        'stripe.planId': subscriptionDetails.plan_id,
+        'stripe.subscriptionId': subscription.id,
+        subscriptions: subscriptionDetails._id
+      }
+    }
+
+    //update user
+    // await usersService.updateUser(
+    //   body,
+    //   { _id: userObj._id }
+    // )
+    const sub = 'Subscription'
+    let html = `<p>Dear ${userObj.email.split('@')[0]},</p><p>You have subscribed to ${subscriptionDetails.title} Plan for ${subscriptionDetails.duration} days on ${subscriptionDetails.title} basis.</p><p>Should you have any queries or if any of your details change, please contact us.</p><p>Best regards,<br>Holyread</p><p><strong>( *&nbsp; Please do not reply to this email *&nbsp; )</strong></p>`
+
+
+
+    const result = await sentEmail(userObj.email, sub, html);
+    if (!result) {
+      throw Error("Something went wrong");
+    }
+
+    return {
+      success,
+      message: `Subscription plan create Successfully`,
+      data: !body.inAppToken ? {
+        subscriptionStatus: subscription.status,
+        customerEmail: userObj.email
+      } : { subscriptions: subscriptionDetails._id }
+    };
+
+
+  } catch (e) {
+    throw e;
   }
 };

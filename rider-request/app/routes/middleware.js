@@ -2,16 +2,25 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { raw } from 'express';
+const io = require('socket.io')();
+
+const customerIoAuth = (socket, next) => {
+  next();
+}
 
 export default app => {
   if (process.env.NODE_ENV === 'production') {
-   console.log("Production");
+    console.log("Production");
   }
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cors());
   app.use(raw());
+
+  io.use(customerIoAuth);
+  require('./socket')(io)
+
 
   if (process.env.NODE_ENV === 'development') {
     app.use((req, res, next) => {

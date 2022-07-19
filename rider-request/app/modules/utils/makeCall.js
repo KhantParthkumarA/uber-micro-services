@@ -1,12 +1,17 @@
 
-const makeCall = (phoneNo) => {
+// const account_sid = process.env.TWILIO_ACCOUNT_SID;
+// const auth_token = process.env.TWILIO_AUTH_TOKEN;
+
+// const Client = require('twilio')(account_sid, auth_token);
+const makeCall = (to, from, session_id) => {
+
     //     client = Client(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
     //     print("## Making a call")
     //     resp = VoiceResponse()
     //     to_id = request.values['To']
     //     from_id = request.values['From']
     //     session_id = request.values['SessionID']  # name we use to uniquely identify conference 
-
+    // client = Client.calls.create()
 
     //    # creates the call from the from_id to the to_id, adding the to_id to the conference
     //     call = client.calls.create(from_ = "client:" + from_id, to = "client:" + to_id,

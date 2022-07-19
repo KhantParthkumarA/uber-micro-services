@@ -2,16 +2,16 @@ import express from 'express';
 import middlewares from './app/routes/middleware';
 import routes from './app/routes';
 import connectDB from './app/config/db';
-
 connectDB();
 const app = express();
 middlewares(app);
+
 routes(app);
 
-(async()=>{
+(async () => {
     try {
-        app.listen(process.env.PORT, (err)=>{
-            if(err){
+        app.listen(process.env.PORT, (err) => {
+            if (err) {
                 console.log("Server Connection Failed");
                 throw err;
             }

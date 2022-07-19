@@ -35,4 +35,29 @@ const ProductSchema = mongoose.Schema({
 });
 
 
-export default mongoose.model("Product", ProductSchema);
+const SubscriptionSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  price: Number,
+  duration: Number,
+  durationType: {
+    type: String,
+    enum: ["MONTH", "YEAR"]
+  },
+  subscriptionFor: {
+    type: String,
+    enum: ["DRIVER", "RIDER"]
+  },
+  plan_id: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  }
+
+})
+
+const Product = mongoose.model("Product", ProductSchema);
+const Subscription = mongoose.model("Subscription", SubscriptionSchema)
+
+module.exports = { Product, Subscription }
+// export default
