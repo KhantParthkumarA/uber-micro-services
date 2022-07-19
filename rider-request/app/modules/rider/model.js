@@ -68,7 +68,8 @@ const RiderSchema = mongoose.Schema({
   otp: {
     type: Number
   },
-  favouriteDriver: Array
+  favouriteDriver: Array,
+  stripeCustomerId: String
 });
 
 
@@ -148,10 +149,48 @@ const RequestSchema = new mongoose.Schema({
   }
 })
 
+const SubscriptionSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  price: Number,
+  duration: Number,
+  durationType: {
+    type: String,
+    enum: ["MONTH", "YEAR"]
+  },
+  subscriptionFor: {
+    type: String,
+    enum: ["DRIVER", "RIDER"]
+  },
+  plan_id: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  }
+
+})
+
+const NotificationsSchema = new mongoose.Schema({
+  notification: {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+  },
+  type: { type: String, required: true },
+  riderId: { type: Schema.Types.ObjectId, ref: 'Rider', required: true, index: true },
+  createdAt: {
+    type: Date, default: () => {
+      return new Date()
+    },
+  }
+}, { strict: 'throw' })
+
 const Rider = mongoose.model('Rider', RiderSchema);
 const Product = mongoose.model('Product', ProductSchema);
 const Fair = mongoose.model('Fair', FairSchema);
 const Requests = mongoose.model('Requests', RequestSchema);
+const Subscription = mongoose.model("Subscription", SubscriptionSchema)
+const Notifications = mongoose.model("Notifications", NotificationsSchema)
+
 // export default mongoose.model('Rider', RiderSchema);
 
-module.exports = { Rider, Product, Fair, Requests };
+module.exports = { Rider, Product, Fair, Requests, Subscription, Notifications };

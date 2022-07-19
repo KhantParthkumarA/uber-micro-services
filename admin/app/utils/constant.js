@@ -3,4 +3,14 @@ const ACCOUNT_STATUS = {
     "UNVERIFIED": "UNVERIFIED"
 }
 
-module.exports = { ACCOUNT_STATUS }
+
+const dataTable = {
+    limit: 100,
+    skip: 0,
+}
+
+const dataLimit = {
+    limit: 10,
+    skip: 0,
+}
+module.exports = { ACCOUNT_STATUS, dataLimit, dataTable }

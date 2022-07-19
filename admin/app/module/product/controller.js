@@ -41,3 +41,52 @@ export async function updateProduct(req, res, next) {
     next(err);
   }
 }
+
+
+
+export async function createSubscription(req, res, next) {
+  try {
+    res.status(200).json(await service.createSubscription(req.body));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getAllSubscription(req, res, next) {
+  try {
+    res.status(200).json(await service.getAllSubscription(req.query));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getSubscription(req, res, next) {
+  try {
+    res.status(200).json(await service.getSubscription(req.params.id));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteSubscription(req, res, next) {
+  try {
+    res.status(200).json(await service.deleteSubscription(req.params.id));
+  } catch (err) {
+    next(err);
+  }
+}
+export async function updateSubscription(req, res, next) {
+  try {
+    res.status(200).json(await service.updateSubscription(req.params.id, req.body));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function subscribePlan(req, res, next) {
+  try {
+    res.status(200).json(await service.subscribePlan(req.body, req.user));
+  } catch (err) {
+    next(err);
+  }
+}
