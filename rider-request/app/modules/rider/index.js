@@ -25,6 +25,11 @@ route.post('/makeCall', controller.makeCalls);
 route.get('/heatMap', controller.heatmapData);
 route.patch('/favouriteDriver/:rider_id', controller.addfavDriver)
 route.patch('/waitingCharge/:rider_id', controller.updateWaitingCharges)
+
+route.post('/order', controller.createOrder);
+route.get('/order/:id', controller.getOrder);
+route.get('/order', controller.getAllOrder);
+route.patch('/order/:id', controller.updateOrder);
 export default route;
 
 

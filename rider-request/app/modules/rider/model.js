@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { mongoose, Schema } from 'mongoose';
 import bcrypt from "bcrypt";
 
 const RiderSchema = mongoose.Schema({
@@ -116,7 +116,7 @@ const ProductSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
 
@@ -142,6 +142,7 @@ const RequestSchema = new mongoose.Schema({
   eta: Number,
   surge_multiplier: Number,
   fair_id: String,
+  seat_count: Number,
   waitingCharge: {
     minute: Number,
     freeMinute: Number,
@@ -178,11 +179,43 @@ const NotificationsSchema = new mongoose.Schema({
   type: { type: String, required: true },
   riderId: { type: Schema.Types.ObjectId, ref: 'Rider', required: true, index: true },
   createdAt: {
-    type: Date, default: () => {
-      return new Date()
-    },
+    type: Date,
+    default: Date.now
   }
 }, { strict: 'throw' })
+
+const OrderSchema = new mongoose.Schema({
+  riderId: { type: Schema.Types.ObjectId, ref: 'Rider' },
+  driverId: { type: Schema.Types.ObjectId, ref: 'Driver' },
+  productId: { type: Schema.Types.ObjectId, ref: 'Product' },
+  requestId: { type: Schema.Types.ObjectId, ref: 'Requests' },
+  price: Number,
+  waitingCharge: {
+    minute: Number,
+    freeMinute: Number,
+    charge: Number
+  },
+  status: {
+    type: String,
+    enum: ['CONFIRMED', 'CANCLE']
+  },
+  rideStartTime: {
+    type: Date
+  },
+  rideEndTime: {
+    type: Date
+  },
+  driverAtTime: {
+    type: Date
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date
+  }
+})
 
 const Rider = mongoose.model('Rider', RiderSchema);
 const Product = mongoose.model('Product', ProductSchema);
@@ -190,7 +223,8 @@ const Fair = mongoose.model('Fair', FairSchema);
 const Requests = mongoose.model('Requests', RequestSchema);
 const Subscription = mongoose.model("Subscription", SubscriptionSchema)
 const Notifications = mongoose.model("Notifications", NotificationsSchema)
+const Order = mongoose.model("Order", OrderSchema)
 
 // export default mongoose.model('Rider', RiderSchema);
 
-module.exports = { Rider, Product, Fair, Requests, Subscription, Notifications };
+module.exports = { Rider, Product, Fair, Requests, Subscription, Notifications, Order };

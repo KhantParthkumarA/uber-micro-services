@@ -1,5 +1,5 @@
 import { success, ExistsError } from "iyasunday";
-const { Product, Subscription } = require('./model')
+const { Product, Subscription, Driver } = require('./model')
 const { createPlan, deletePlanById, retrievePlan, addPrice } = require('./stripeService');
 const { dataTable } = require('./../../utils/constant');
 const { getSearchRegexp } = require('./../../utils/util');
@@ -214,6 +214,83 @@ export async function updateSubscription(id, body) {
       success,
       message: `You have successfully update your Subscription`,
       data: subscription,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+export async function createDriver(body) {
+  try {
+    const isExist = await Driver.findOne({ product_id: body.product_id });
+    if (isExist) {
+      throw new ExistsError(`${body.firstname} already Exist`);
+    }
+
+    const driver = await Driver.create(body);
+
+    return {
+      success,
+      message: `You have successfully created your driver`,
+      data: driver,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function getAllDriver() {
+  try {
+
+    const driver = await Driver.find();
+    return {
+      success,
+      message: `You have successfully get all driver`,
+      data: driver,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function getDriver(id) {
+  try {
+    const driver = await Driver.findOne({ _id: id });
+    if (!driver) {
+      throw new ExistsError(`${id} driver not Exist`);
+    }
+    return {
+      success,
+      message: `You have successfully get your driver`,
+      data: driver,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function deleteDriver(id) {
+  try {
+    const driver = await Driver.deleteOne({ _id: id });
+
+    return {
+      success,
+      message: `You have successfully delete your driver`,
+      data: driver,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function updateDriver(id, body) {
+  try {
+    const driver = await Driver.update({ _id: id }, { $set: body });
+    return {
+      success,
+      message: `You have successfully update your driver`,
+      data: driver,
     };
   } catch (err) {
     throw err;

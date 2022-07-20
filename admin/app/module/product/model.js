@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-
+import { mongoose, Schema } from "mongoose";
 
 //Here you define your model
 const ProductSchema = mongoose.Schema({
@@ -56,8 +54,38 @@ const SubscriptionSchema = new mongoose.Schema({
 
 })
 
+const DriverSchema = new mongoose.Schema({
+  "firstName": String,
+  "lastName": String,
+  "email": String,
+  "phoneNumber": Number,
+  "picture": String,
+  "rating": Number,
+  "DOB": Date,
+  "status": {
+    type: String,
+    enum: ["ACTIVE", "INACTIVE"]
+  },
+  product_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product'
+  },
+  role: {
+    type: String,
+    default: "DRIVER"
+  },
+  city: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date
+  }
+})
+
 const Product = mongoose.model("Product", ProductSchema);
 const Subscription = mongoose.model("Subscription", SubscriptionSchema)
+const Driver = mongoose.model("Driver", DriverSchema);
 
-module.exports = { Product, Subscription }
-// export default
+module.exports = { Product, Subscription, Driver }
