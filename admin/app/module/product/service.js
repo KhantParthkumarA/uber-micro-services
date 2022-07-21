@@ -125,26 +125,6 @@ export async function getAllSubscription(params) {
       }
     }
 
-    const subscriptionsSorting = [];
-    switch (params.column) {
-      case 'title':
-        subscriptionsSorting.push(['title', params.order || 'ASC']);
-        break;
-      case 'price':
-        subscriptionsSorting.push(['price', params.order || 'ASC']);
-        break;
-      case 'duration':
-        subscriptionsSorting.push(['duration', params.order || 'ASC']);
-        break;
-      case 'createdAt':
-        subscriptionsSorting.push(['createdAt', params.order || 'ASC']);
-        break;
-      default:
-        subscriptionsSorting.push(['title', 'DESC']);
-        break;
-    }
-
-
     const subscription = await Subscription.find(searchFilter).skip(skip).limit(limit).sort(subscriptionsSorting).lean();
     return {
       success,
@@ -219,6 +199,7 @@ export async function updateSubscription(id, body) {
     throw err;
   }
 }
+
 
 
 

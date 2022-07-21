@@ -1,6 +1,6 @@
 import { success, ExistsError, AuthenticationError } from "iyasunday";
 const axios = require('axios');
-const { Rider, Product, Fair, Requests, Subscription } = require("./model")
+const { Rider, Product, Fair, Requests, Subscription, Notifications, Order } = require("./model")
 const { createCustomer } = require('./stripeService');
 const { sentEmail } = require('./../utils/sentMail');
 
@@ -11,19 +11,30 @@ export async function create(body) {
       throw new ExistsError(`${Insurpackage.name} already Exist`);
     }
 
-    const newRider = new Rider();
-    newRider.riderFirstName = body.riderFirstName;
-    newRider.riderLastName = body.riderLastName;
-    newRider.email = body.email;
-    newRider.phoneNumber = body.phoneNumber;
-    newRider.password = body.password
-    await newRider.save();
+
+    const riders = await Rider.create(body);
 
     return {
       success,
       message: `New Rider Successfully Created`,
-      data: newRider,
+      data: riders,
     };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function getRiderAndNotifications(query) {
+  try {
+    const rider = await Rider.findOne(query).select('-password');
+
+    if (rider) {
+      const notifications = await Notifications.find({ riderId: result._id }).sort([['createdAt', 'DESC']]).lean().exec()
+      rider.notifications = notifications
+    }
+
+    return rider;
   } catch (err) {
     throw err;
   }
@@ -552,3 +563,94 @@ export async function subscribePlan(body, user) {
     throw e;
   }
 };
+
+
+/** Get notifications */
+export async function getUserNotifications(query) {
+  try {
+    const notificationDetails = await Notifications.find(query).sort([['createdAt', 'DESC']]).lean().exec()
+    return notificationDetails
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
+/** Delete notifications */
+export async function deleteNotifications(query) {
+  try {
+    await Notifications.deleteMany(query, { new: true })
+    return true
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
+/** Create notifications */
+export async function createNotification(body) {
+  try {
+    await Notifications.create(body);
+    return true;
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
+export async function createOrder(body) {
+  try {
+    const order = await Order.create(body);
+
+    return {
+      success,
+      message: `Order create Successfully`,
+      order
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function getOrder(id) {
+  try {
+    const order = await Order.findOne({ _id: id });
+
+    return {
+      success,
+      message: `Order get Successfully`,
+      order
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function getAllOrder() {
+  try {
+    const order = await Order.find();
+
+    return {
+      success,
+      message: `Order get Successfully`,
+      order
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function updateOrder(body, id) {
+  try {
+    const order = await Order.update({ _id: id }, {
+      $set: body
+    });
+
+    return {
+      success,
+      message: `Order update Successfully`,
+      order
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+

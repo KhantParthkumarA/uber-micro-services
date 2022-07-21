@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-
+import { mongoose, Schema } from "mongoose";
 
 //Here you define your model
 const ProductSchema = mongoose.Schema({
@@ -52,12 +50,20 @@ const SubscriptionSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  live_location: {
+    lat: String,
+    lng: String
+  },
+  status: {
+
   }
 
 })
+
+
 
 const Product = mongoose.model("Product", ProductSchema);
 const Subscription = mongoose.model("Subscription", SubscriptionSchema)
 
 module.exports = { Product, Subscription }
-// export default

@@ -129,3 +129,35 @@ export async function updateWaitingCharges(req, res, next) {
         next(err);
     }
 }
+
+export async function createOrder(req, res, next) {
+    try {
+        return res.status(200).json(await service.createOrder(req.body));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function getOrder(req, res, next) {
+    try {
+        return res.status(200).json(await service.getOrder(req.params.id));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function getAllOrder(req, res, next) {
+    try {
+        return res.status(200).json(await service.getAllOrder());
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function updateOrder(req, res, next) {
+    try {
+        return res.status(200).json(await service.updateOrder(req.body, req.params.id));
+    } catch (err) {
+        next(err);
+    }
+}

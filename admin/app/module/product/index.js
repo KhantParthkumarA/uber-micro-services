@@ -10,7 +10,8 @@ const { createProduct,
     getAllSubscription,
     getSubscription,
     updateSubscription,
-    subscribePlan } = require('./controller');
+    subscribePlan,
+} = require('./controller');
 const route = Router();
 
 //here, you define your route and use the {guard = ""} if the route has a permission case
@@ -31,4 +32,5 @@ route.get("/subscription", getAllSubscription);
 route.delete("/subscription/:id", deleteSubscription);
 route.patch("/subscription/:id", updateSubscription);
 route.post('/subscribePlan', subscribePlan)
+
 module.exports = route;
