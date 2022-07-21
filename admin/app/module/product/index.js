@@ -11,11 +11,6 @@ const { createProduct,
     getSubscription,
     updateSubscription,
     subscribePlan,
-    getAllDriver,
-    getDriver,
-    deleteDriver,
-    createDriver,
-    updateDriver
 } = require('./controller');
 const route = Router();
 
@@ -38,10 +33,4 @@ route.delete("/subscription/:id", deleteSubscription);
 route.patch("/subscription/:id", updateSubscription);
 route.post('/subscribePlan', subscribePlan)
 
-//driver
-route.post("/driver", createDriver);
-route.get("/driver/:id", getDriver)
-route.get("/driver", getAllDriver);
-route.delete("/driver/:id", deleteDriver);
-route.patch("/driver/:id", updateDriver);
 module.exports = route;

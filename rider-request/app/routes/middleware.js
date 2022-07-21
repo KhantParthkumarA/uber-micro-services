@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { raw } from 'express';
 const io = require('socket.io')();
-
+const { fetchNotifications, clearNotifications } = require('./../modules/Socket/socketService');
 
 const ClientManager = require('./../modules/chatAndCall/ClientManager')
 const ChatroomManager = require('./../modules/chatAndCall/ChatroomManager')
@@ -27,6 +27,17 @@ export default app => {
   app.use(raw());
 
   io.use(customerIoAuth);
+  io.on('connection', async (socket) => {
+    socket.on("error", (err) => {
+      if (err && err.message === "unauthorized event") {
+        socket.disconnect();
+      }
+    });
+    console.log('new connection - ', socket.id)
+    socket.on('fetchNotifications', (query) => fetchNotifications(socket, query));
+    socket.on('clearNotifications', (query) => clearNotifications(socket, query));
+    socket.on('disconnect', () => console.log('disconnected'));
+  })
   io.on('connection', function (client) {
     const {
       handleRegister,

@@ -11,18 +11,13 @@ export async function create(body) {
       throw new ExistsError(`${Insurpackage.name} already Exist`);
     }
 
-    const newRider = new Rider();
-    newRider.riderFirstName = body.riderFirstName;
-    newRider.riderLastName = body.riderLastName;
-    newRider.email = body.email;
-    newRider.phoneNumber = body.phoneNumber;
-    newRider.password = body.password
-    await newRider.save();
+
+    const riders = await Rider.create(body);
 
     return {
       success,
       message: `New Rider Successfully Created`,
-      data: newRider,
+      data: riders,
     };
   } catch (err) {
     throw err;

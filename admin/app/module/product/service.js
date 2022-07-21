@@ -1,5 +1,5 @@
 import { success, ExistsError } from "iyasunday";
-const { Product, Subscription, Driver } = require('./model')
+const { Product, Subscription } = require('./model')
 const { createPlan, deletePlanById, retrievePlan, addPrice } = require('./stripeService');
 const { dataTable } = require('./../../utils/constant');
 const { getSearchRegexp } = require('./../../utils/util');
@@ -125,26 +125,6 @@ export async function getAllSubscription(params) {
       }
     }
 
-    const subscriptionsSorting = [];
-    switch (params.column) {
-      case 'title':
-        subscriptionsSorting.push(['title', params.order || 'ASC']);
-        break;
-      case 'price':
-        subscriptionsSorting.push(['price', params.order || 'ASC']);
-        break;
-      case 'duration':
-        subscriptionsSorting.push(['duration', params.order || 'ASC']);
-        break;
-      case 'createdAt':
-        subscriptionsSorting.push(['createdAt', params.order || 'ASC']);
-        break;
-      default:
-        subscriptionsSorting.push(['title', 'DESC']);
-        break;
-    }
-
-
     const subscription = await Subscription.find(searchFilter).skip(skip).limit(limit).sort(subscriptionsSorting).lean();
     return {
       success,
@@ -220,82 +200,6 @@ export async function updateSubscription(id, body) {
   }
 }
 
-
-export async function createDriver(body) {
-  try {
-    const isExist = await Driver.findOne({ product_id: body.product_id });
-    if (isExist) {
-      throw new ExistsError(`${body.firstname} already Exist`);
-    }
-
-    const driver = await Driver.create(body);
-
-    return {
-      success,
-      message: `You have successfully created your driver`,
-      data: driver,
-    };
-  } catch (err) {
-    throw err;
-  }
-}
-
-export async function getAllDriver() {
-  try {
-
-    const driver = await Driver.find();
-    return {
-      success,
-      message: `You have successfully get all driver`,
-      data: driver,
-    };
-  } catch (err) {
-    throw err;
-  }
-}
-
-export async function getDriver(id) {
-  try {
-    const driver = await Driver.findOne({ _id: id });
-    if (!driver) {
-      throw new ExistsError(`${id} driver not Exist`);
-    }
-    return {
-      success,
-      message: `You have successfully get your driver`,
-      data: driver,
-    };
-  } catch (err) {
-    throw err;
-  }
-}
-
-export async function deleteDriver(id) {
-  try {
-    const driver = await Driver.deleteOne({ _id: id });
-
-    return {
-      success,
-      message: `You have successfully delete your driver`,
-      data: driver,
-    };
-  } catch (err) {
-    throw err;
-  }
-}
-
-export async function updateDriver(id, body) {
-  try {
-    const driver = await Driver.update({ _id: id }, { $set: body });
-    return {
-      success,
-      message: `You have successfully update your driver`,
-      data: driver,
-    };
-  } catch (err) {
-    throw err;
-  }
-}
 
 
 

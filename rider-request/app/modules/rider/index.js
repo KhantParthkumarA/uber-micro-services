@@ -6,7 +6,7 @@ import * as controller from './controller';
 
 const route = Router();
 
-route.post('/create', controller.create);
+route.post('/createRider', controller.create);
 route.get('/estimates/price', controller.getPriceEstimate);
 route.get('/estimates/time', controller.getTimeEstimate);
 route.post('/requests/estimate', controller.rideRequestEstimate);

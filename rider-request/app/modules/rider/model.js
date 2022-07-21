@@ -2,9 +2,8 @@ import { mongoose, Schema } from 'mongoose';
 import bcrypt from "bcrypt";
 
 const RiderSchema = mongoose.Schema({
-  riderID: String,
-  riderFirstName: String,
-  riderLastName: String,
+  firstName: String,
+  lastName: String,
   email: {
     type: String,
     required: true,
@@ -69,7 +68,8 @@ const RiderSchema = mongoose.Schema({
     type: Number
   },
   favouriteDriver: Array,
-  stripeCustomerId: String
+  stripeCustomerId: String,
+  liveLocation: Object,
 });
 
 
