@@ -12,19 +12,21 @@ const RiderSchema = mongoose.Schema({
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "Please fill a valid email address",
     ],
-    unique: [true, "User with email already exists"],
+    unique: [true, "Rider with email already exists"],
   },
   phoneNumber: {
     type: String,
-    unique: [true, "User with phone number already exists"],
+    unique: [true, "Rider with phone number already exists"],
   },
   password: {
     type: String,
     minlength: 6,
     select: false,
   },
-  userType: {
-    type: String
+  type: {
+    type: String,
+    enum: ["RIDER"],
+    default: "RIDER"
   },
   status: {
     type: String,
@@ -55,6 +57,9 @@ const RiderSchema = mongoose.Schema({
   },
   verificationCode: {
     type: Number
+  },
+  verified: {
+    type: Boolean
   },
   oAuth: {
     clientId: {

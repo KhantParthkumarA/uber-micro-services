@@ -3,6 +3,101 @@ const axios = require('axios');
 const { Rider, Product, Fair, Requests, Subscription, Notifications, Order } = require("./model")
 const { createCustomer } = require('./stripeService');
 const { sentEmail } = require('./../utils/sentMail');
+const jwt = require('jsonwebtoken');
+
+
+const setAuth = async (rider) => {
+  const token = await jwt.sign({ id: rider._id }, process.env.JWT_SECRET);
+  return token;
+}
+
+export async function signup(body) {
+  try {
+    const isExist = await Rider.findOne({ email: body.email });
+    if (isExist) {
+      throw new ExistsError(`${body.email} already Exist`);
+    }
+    const phoneExist = await Rider.findOne({ phoneNumber: body.phoneNumber });
+    if (phoneExist) {
+      throw new ExistsError("Rider with Phone Number already exists");
+    }
+
+    const rider = await Rider.create({ ...body, type: "RIDER", verified: true });
+    return {
+      success,
+      message: `You have successfully created your account`,
+      data: {
+        token: await setAuth(rider),
+        rider
+      }
+
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+export async function login(body) {
+  try {
+    const email = body.email;
+    const password = body.password;
+
+    const rider = await Rider.findOne({ email: email }).select('+password');
+
+    if (!rider) {
+      throw new Error("Incorrect email and password");
+    }
+
+    const correct = await rider.correctPassword(password, rider.password);
+
+    if (!correct) {
+      throw new Error("Incorrect email and password");
+    }
+
+
+    return {
+      success,
+      message: `You have successfully login`,
+      data: await setAuth(rider),
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+const verifyToken = (token) => {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  return decoded
+}
+
+export async function verifyLogin(headers) {
+  try {
+    const accessToken = headers['x-access-token'];
+    let rider;
+    if (!accessToken) {
+      throw new Error("token missing......... ");
+    }
+    else {
+      const details = await verifyToken(accessToken)
+      rider = await Rider.findOne({ _id: details.id, type: "RIDER" })
+      if (!rider) {
+        throw new Error("rider not authorised. ");
+      }
+      if (!rider.verified) {
+        throw new Error("rider not verified");
+      }
+    }
+
+    return {
+      rider: rider,
+      flag: true
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
 
 export async function create(body) {
   try {
