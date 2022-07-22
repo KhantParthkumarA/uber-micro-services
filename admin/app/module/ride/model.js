@@ -47,6 +47,19 @@ const OrderSchema = new mongoose.Schema({
     }
 })
 
+OrderSchema.pre('save', function (next) {
+    if (this.price) {
+        this.price = Math.round(this.price);
+    }
+    next();
+})
+OrderSchema.pre('update', function (next) {
+    if (this.price) {
+        this.price = Math.round(this.price);
+    }
+    next();
+})
+
 const RiderSchema = mongoose.Schema({
     firstName: String,
     lastName: String,
