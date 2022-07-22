@@ -32,7 +32,8 @@ const DriverSchema = new mongoose.Schema({
     drive_status: {
         type: String,
         enum: ["AVAILABLE", "WAY_TO_PICKUP", "START_RIDE", "ENROUTE_TO_COMPLETE_RIDE"]
-    }
+    },
+    bank_details: Object
 })
 
 

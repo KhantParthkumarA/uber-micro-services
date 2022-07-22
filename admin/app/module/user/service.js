@@ -1,9 +1,10 @@
-const { User } = require('./model')
+const { User, Setting } = require('./model');
+const { Order } = require('./../ride/model');
 import { success, ExistsError } from "iyasunday";
 import bcrypt from "bcrypt";
 const jwt = require('jsonwebtoken');
 
-const setAuth = async (user) => {
+export const setAuth = async (user) => {
     const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     return token;
 }
@@ -106,32 +107,59 @@ export async function login(body) {
     }
 }
 
-export const verifyToken = (token) => {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded
-}
 
-export async function verifyLogin(headers) {
+export async function getCompanyEarning() {
     try {
-        const accessToken = headers['x-access-token'];
-        let user;
-        if (!accessToken) {
-            throw new Error("token missing......... ");
-        }
-        else {
-            const details = await verifyToken(accessToken)
-            user = await User.findOne({ _id: details.id, type: "ADMIN" })
-            if (!user) {
-                throw new Error("admin not authorised. ");
+
+        const totalOrder = await Order().populate("productId").populate("riderId").populate("driverId");
+        let response = [];
+        let total_earning = 0;
+        totalOrder.forEach(el => {
+            let price = el.price;
+            let com = el.productId.priceDetails.company_commission;
+
+            const driver_earning = (price * 100) / com;
+            const company_earning = price - driver_earning;
+            total_earning += company_earning;
+            el.company_earning = {
+                order_id: el._id,
+                companyEarning: company_earning
             }
-            if (!user.verified) {
-                throw new Error("admin not verified");
-            }
-        }
+            response.push(x);
+        })
 
         return {
-            user: user,
-            flag: true
+            success,
+            message: `You have successfully get company earning`,
+            total_earning: total_earning,
+            response
+        };
+    } catch (err) {
+        throw err;
+    }
+}
+export async function createSettings(body) {
+    try {
+
+        const setting = await Setting.create(body)
+        return {
+            success,
+            message: `You have successfully create setting`,
+            setting
+        };
+    } catch (err) {
+        throw err;
+    }
+}
+
+export async function updateSettings(id, body) {
+    try {
+
+        const setting = await Setting.update({ _id: id }, { $set: body });
+        return {
+            success,
+            message: `You have successfully update setting`,
+            setting
         };
     } catch (err) {
         throw err;

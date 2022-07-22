@@ -12,7 +12,7 @@ const { createProduct,
     updateSubscription,
     subscribePlan,
 } = require('./controller');
-const { verifyLogin } = require('./../user/controller')
+const { verifyLogin } = require('./../../routes/auth-middleware')
 const route = Router();
 
 //here, you define your route and use the {guard = ""} if the route has a permission case

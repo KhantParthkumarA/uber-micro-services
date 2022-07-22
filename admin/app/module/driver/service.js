@@ -1,4 +1,5 @@
-const { Driver, Order } = require('./model')
+const { Driver } = require('./model');
+const { Order } = require('./../ride/model')
 import { success, ExistsError } from "iyasunday";
 const { dataTable } = require('./../../utils/constant');
 export async function createDriver(body) {
@@ -20,7 +21,7 @@ export async function createDriver(body) {
 
 export async function getAllDriver() {
     try {
-        const driver = await Driver.find();
+        const driver = await Driver.find().populate("product_id");
 
         let approve = 0;
         let pending = 0;
@@ -59,7 +60,7 @@ export async function getAllDriver() {
 
 export async function getDriver(id) {
     try {
-        const driver = await Driver.findOne({ _id: id });
+        const driver = await Driver.findOne({ _id: id }).populate("product_id");
         if (!driver) {
             throw new ExistsError(`${id} driver not Exist`);
         }
@@ -126,7 +127,7 @@ export async function getDriverLiveLocation(params) {
 
 export async function getUnapproveDriver() {
     try {
-        const driver = await Driver.find({ status: "PENDING" });
+        const driver = await Driver.find({ status: "PENDING" }).populate("product_id");
         return {
             success,
             message: `You have successfully get unapprove driver `,
@@ -139,7 +140,7 @@ export async function getUnapproveDriver() {
 
 export async function getApproveDriver() {
     try {
-        const driver = await Driver.find({ status: "APPROVE" });
+        const driver = await Driver.find({ status: "APPROVE" }).populate("product_id");
         return {
             success,
             message: `You have successfully get approve driver `,
@@ -149,4 +150,57 @@ export async function getApproveDriver() {
         throw err;
     }
 }
+
+
+export async function getDriverEarning(id) {
+    try {
+
+        const totalOrder = await Order({ driverId: id }).populate("productId");
+        let response = [];
+        let total_earning = 0;
+        totalOrder.forEach(el => {
+            let price = el.price;
+            let com = el.productId.priceDetails.company_commission;
+
+            const driver_earning = (price * 100) / com;
+            total_earning += driver_earning;
+            let x = {
+                order_id: el._id,
+                driverEarning: driver_earning
+            }
+            response.push(x);
+        })
+
+        return {
+            success,
+            message: `You have successfully get driver earning`,
+            driver_id: id,
+            total_earning: total_earning,
+            response
+        };
+    } catch (err) {
+        throw err;
+    }
+}
+
+
+export async function getDriverDetailWithRideHistory(id) {
+    try {
+
+        const driverDetails = await Driver.find();
+        driverDetails.forEach(el => {
+            const totalOrder = await Order({ driverId: el._id });
+            el.rideHistory = totalOrder;
+        })
+
+        return {
+            success,
+            message: `You have successfully get driver details with ride history`,
+            driverDetails
+        };
+    } catch (err) {
+        throw err;
+    }
+}
+
 

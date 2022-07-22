@@ -29,5 +29,33 @@ UserSchema.pre('save', async function (next) {
 UserSchema.methods.correctPassword = async function (password, userPassword) {
     return await bcrypt.compare(password, userPassword);
 };
+
+const SettingSchema = new Schema({
+    appLink: {
+        userPlayStoreLink: String,
+        userAppStoreLink: String,
+        driverPlayStoreLink: String,
+        driverAppStoreLink: String,
+    },
+    driverRideAcceptTimeout: Number,
+    contactNumber: String,
+    email: { type: String, validate: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
+    driverSearchRadios: String,
+    googleMapKey: String,
+    fireBaseKey: String,
+    brandDetails: {
+        name: String,
+        logo: String,
+        faviconIcon: String
+    },
+    surge_detail: {
+        price: Number,
+        from: Number,
+        to: Number
+    }
+})
+
+
 const User = mongoose.model('User', UserSchema);
-module.exports = { User }
+const Setting = mongoose.model('Setting', SettingSchema);
+module.exports = { User, Setting }

@@ -17,19 +17,6 @@ export async function login(req, res, next) {
     }
 }
 
-
-export async function verifyLogin(req, res, next) {
-    try {
-        const data = await service.verifyLogin(req.headers)
-        if (data.flag) {
-            req.rider = data.rider;
-            next();
-        }
-    } catch (err) {
-        next(err);
-    }
-}
-
 export async function create(req, res, next) {
     try {
         return res.status(200).json(await service.create(req.body))

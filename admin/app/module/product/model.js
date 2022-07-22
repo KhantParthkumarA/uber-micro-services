@@ -17,7 +17,16 @@ const ProductSchema = mongoose.Schema({
     cost_per_distance: Number,
     base: Number,
     cancellation_fee: Number,
-    currency_code: String
+    currency_code: String,
+    company_commission: Number
+  },
+  product_type: {
+    type: String,
+    enum: ["SUV", "SEDAN", "HATCHBACK", "LUXUARY"]
+  },
+  status: {
+    type: String,
+    enum: ["ACTIVE", "INACTIVE"]
   },
   image: String,
   cash_enabled: Boolean,
@@ -54,9 +63,6 @@ const SubscriptionSchema = new mongoose.Schema({
   live_location: {
     lat: String,
     lng: String
-  },
-  status: {
-
   }
 
 })

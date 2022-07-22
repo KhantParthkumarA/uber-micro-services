@@ -11,9 +11,23 @@ const OrderSchema = new mongoose.Schema({
         freeMinute: Number,
         charge: Number
     },
+    paymentMethod: {
+        type: String,
+        default: "CASH"
+    },
     status: {
         type: String,
         enum: ['CONFIRMED', 'CANCLE']
+    },
+    isCompleted: {
+        type: Boolean
+    },
+    cancleOrder: {
+        cancleBy: {
+            type: String,
+            enum: ['DRIVER', 'RIDER']
+        },
+        reason: String
     },
     rideStartTime: {
         type: Date

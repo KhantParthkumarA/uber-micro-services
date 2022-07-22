@@ -54,9 +54,27 @@ export async function unapproveDriver(req, res, next) {
         next(err);
     }
 }
+
+
 export async function approveDriver(req, res, next) {
     try {
         res.status(200).json(await service.getApproveDriver());
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function driverEarning(req, res, next) {
+    try {
+        res.status(200).json(await service.getDriverEarning(req.params.id));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function driverDetailWithRideHistory(req, res, next) {
+    try {
+        res.status(200).json(await service.getDriverDetailWithRideHistory());
     } catch (err) {
         next(err);
     }

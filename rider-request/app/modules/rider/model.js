@@ -111,6 +111,10 @@ const ProductSchema = mongoose.Schema({
     cancellation_fee: Number,
     currency_code: String
   },
+  product_type: {
+    type: String,
+    enum: ["SUV", "SEDAN", "HATCHBACK", "LUXUARY"]
+  },
   image: String,
   cash_enabled: Boolean,
   shared: Boolean,
@@ -200,9 +204,23 @@ const OrderSchema = new mongoose.Schema({
     freeMinute: Number,
     charge: Number
   },
+  paymentMethod: {
+    type: String,
+    default: "CASH"
+  },
   status: {
     type: String,
     enum: ['CONFIRMED', 'CANCLE']
+  },
+  isCompleted: {
+    type: Boolean
+  },
+  cancleOrder: {
+    cancleBy: {
+      type: String,
+      enum: ['DRIVER', 'RIDER']
+    },
+    reason: String
   },
   rideStartTime: {
     type: Date
@@ -222,6 +240,68 @@ const OrderSchema = new mongoose.Schema({
   }
 })
 
+
+const DriverSchema = new mongoose.Schema({
+  "firstName": String,
+  "lastName": String,
+  "email": String,
+  "phoneNumber": Number,
+  "picture": String,
+  "rating": Number,
+  "DOB": Date,
+  "status": {
+    type: String,
+    enum: ["PENDING", "APPROVE", "REJECT", "BLOCK"]
+  },
+  product_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product'
+  },
+  role: {
+    type: String,
+    default: "DRIVER"
+  },
+  city: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date
+  },
+  liveLocation: Object,
+  drive_status: {
+    type: String,
+    enum: ["AVAILABLE", "WAY_TO_PICKUP", "START_RIDE", "ENROUTE_TO_COMPLETE_RIDE"]
+  }
+})
+
+const SettingSchema = new Schema({
+  appLink: {
+    userPlayStoreLink: String,
+    userAppStoreLink: String,
+    driverPlayStoreLink: String,
+    driverAppStoreLink: String,
+  },
+  driverRideAcceptTimeout: Number,
+  contactNumber: String,
+  email: { type: String, validate: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
+  driverSearchRadios: String,
+  googleMapKey: String,
+  fireBaseKey: String,
+  brandDetails: {
+    name: String,
+    logo: String,
+    faviconIcon: String
+  },
+  surge_detail: {
+    price: Number,
+    from: Number,
+    to: Number
+  }
+})
+
+
 const Rider = mongoose.model('Rider', RiderSchema);
 const Product = mongoose.model('Product', ProductSchema);
 const Fair = mongoose.model('Fair', FairSchema);
@@ -229,7 +309,9 @@ const Requests = mongoose.model('Requests', RequestSchema);
 const Subscription = mongoose.model("Subscription", SubscriptionSchema)
 const Notifications = mongoose.model("Notifications", NotificationsSchema)
 const Order = mongoose.model("Order", OrderSchema)
+const Driver = mongoose.model("Driver", DriverSchema);
+const Setting = mongoose.model('Setting', SettingSchema);
 
 // export default mongoose.model('Rider', RiderSchema);
 
-module.exports = { Rider, Product, Fair, Requests, Subscription, Notifications, Order };
+module.exports = { Rider, Product, Fair, Requests, Subscription, Notifications, Order, Driver, Setting };

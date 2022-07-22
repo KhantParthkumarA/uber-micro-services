@@ -1,7 +1,7 @@
 'use strict';
 import { Router } from 'express';
 import * as controller from './controller';
-const { verifyLogin } = require('./controller')
+const { verifyLogin } = require('./../../routes/auth-middleware')
 const route = Router();
 
 route.post("/rider/signup", controller.signup);
