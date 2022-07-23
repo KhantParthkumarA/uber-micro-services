@@ -1,8 +1,71 @@
 import { success, ExistsError, AuthenticationError } from "iyasunday";
 const axios = require('axios');
-const { Rider, Product, Fair, Requests, Subscription, Notifications, Order } = require("./model")
+const { Rider, Product, Fair, Requests, Subscription, Notifications, Order, Driver, Setting } = require("./model")
 const { createCustomer } = require('./stripeService');
 const { sentEmail } = require('./../utils/sentMail');
+const jwt = require('jsonwebtoken');
+
+
+const setAuth = async (rider) => {
+  const token = await jwt.sign({ id: rider._id }, process.env.JWT_SECRET);
+  return token;
+}
+
+export async function signup(body) {
+  try {
+    const isExist = await Rider.findOne({ email: body.email });
+    if (isExist) {
+      throw new ExistsError(`${body.email} already Exist`);
+    }
+    const phoneExist = await Rider.findOne({ phoneNumber: body.phoneNumber });
+    if (phoneExist) {
+      throw new ExistsError("Rider with Phone Number already exists");
+    }
+
+    const rider = await Rider.create({ ...body, type: "RIDER", verified: true });
+    return {
+      success,
+      message: `You have successfully created your account`,
+      data: {
+        token: await setAuth(rider),
+        rider
+      }
+
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+export async function login(body) {
+  try {
+    const email = body.email;
+    const password = body.password;
+
+    const rider = await Rider.findOne({ email: email }).select('+password');
+
+    if (!rider) {
+      throw new Error("Incorrect email and password");
+    }
+
+    const correct = await rider.correctPassword(password, rider.password);
+
+    if (!correct) {
+      throw new Error("Incorrect email and password");
+    }
+
+
+    return {
+      success,
+      message: `You have successfully login`,
+      data: await setAuth(rider),
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
 
 export async function create(body) {
   try {
@@ -74,8 +137,14 @@ export async function priceEstimate(body) {
     let ride_distance = distance.split(" ")[0];
     let ride_duration = duration.split(" ")[0];
     let booking_fees = 3;
-    let Surge_Price = 1.5;
+    let Surge_Price = 1;
 
+    const setting = await Setting.find().limit(1);
+    const surge_detail = setting.surge_detail;
+    const hour = new Date().getHours();
+    if (hour > surge_detail.from && hour < surge_detail.to) {
+      Surge_Price = surge_detail.price;
+    }
 
     for (let j = 0; j < product.length; j++) {
       let baseFare = product[j].priceDetails.base;
@@ -83,6 +152,9 @@ export async function priceEstimate(body) {
       let cost_per_distance = product[j].priceDetails.cost_per_distance;
 
       finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees;
+
+      let commission = product[j].priceDetails.company_commission;
+      finalFare = finalFare + (finalFare * commission) / 100;
 
       let obj = { ...product[j]._doc, "priceEstimate": finalFare.toFixed(2), "ride_distance": distance, "ride_duration": duration };
       response.push(obj);
@@ -207,12 +279,15 @@ export async function rideRequestEstimate(body) {
       }
     }
 
-    let Surge_Price = 1;
     const booking_fees = 10; // right now booking fees is static
-    // if (ride time is between night) {
-    //   Surge_Price=1.5
-    // }
+    let Surge_Price = 1;
 
+    const setting = await Setting.find().limit(1);
+    const surge_detail = setting.surge_detail;
+    const hour = new Date().getHours();
+    if (hour > surge_detail.from && hour < surge_detail.to) {
+      Surge_Price = surge_detail.price;
+    }
     const toll = await tollFees({
       "latitude": start_lat,
       "longitude": start_lng
@@ -221,12 +296,16 @@ export async function rideRequestEstimate(body) {
       "longitude": end_lng
     }, "DRIVE", "GASOLINE", "US_WA_GOOD_TO_GO")
 
-    const ride_cost = findCost(base, duration_value, cost_per_minute, distance_value, cost_per_distance, Surge_Price, booking_fees, toll);
+    let ride_cost = findCost(base, duration_value, cost_per_minute, distance_value, cost_per_distance, Surge_Price, booking_fees, toll);
+
+    const commission = product.priceDetails.company_commission;
+
+    ride_cost = ride_cost + (ride_cost * commission) / 100;
 
 
-    // const pickup_estimate = distance_duration({ "lat": start_lat, "lng": start_lng }, { "lat": end_lat, "lng": end_lng })
-    // for pickup_estimate you have to provide location of driver and location of user
-    const pickup_estimate = 2;
+    const driver = await Driver.findOne({ product_id: product._id });
+    let pickup_estimate = distance_duration({ "lat": driver.liveLocation.lat, "lng": driver.liveLocation.lng }, { "lat": start_lat, "lng": start_lng })
+    pickup_estimate = pickup_estimate.duration;
 
     const fair = new Fair();
     fair.trip = trip;
@@ -263,16 +342,23 @@ export async function rideRequest(body) {
 
     const fair_details = await Fair.findOne({ _id: fair_id });
     const product = await Product.findOne({ productID: product_id });
+    const driverDetail = await Driver.findOne({ product_id: product._id });
     const status = "processing";  // provide status of request
     const vehicle = product; // vehicle details
-    const driver = null;    // you hvae to provide driver details
+    const driver = driverDetail;    // you hvae to provide driver details
     const location = {
       start: [start_lat, start_lng],
       end: [end_lat, end_lng]
     };
     const eta = fair_details.pickup_estimate;
-    const surge_multiplier = null; // if night time then you have to set
 
+    let Surge_Price = 1; // if night time then you have to set
+    const setting = await Setting.find().limit(1);
+    const surge_detail = setting.surge_detail;
+    const hour = new Date().getHours();
+    if (hour > surge_detail.from && hour < surge_detail.to) {
+      Surge_Price = surge_detail.price;
+    }
     let newRequests = new Requests();
 
     newRequests.status = status;
@@ -280,7 +366,7 @@ export async function rideRequest(body) {
     newRequests.driver = driver;
     newRequests.location = location;
     newRequests.eta = eta;
-    newRequests.surge_multiplier = surge_multiplier;
+    newRequests.surge_multiplier = Surge_Price;
     newRequests.fair_id = fair_id;
     // console.log(newRequests);
 
@@ -401,7 +487,7 @@ export async function getReceipt(request_id) {
     const request = await Requests.findOne({ _id: request_id });
 
     const fair_detail = await Fair.findOne({ _id: request.fair_id });
-    console.log(fair_detail);
+    // console.log(fair_detail);
     const x = await distance_duration({ "lat": request.location.start[0], "lng": request.location.start[1] }, { "lat": request.location.end[0], "lng": request.location.end[1] })
     let obj = {
       "request_id": request_id,

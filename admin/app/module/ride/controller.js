@@ -16,3 +16,19 @@ export async function liveLocationRider(req, res, next) {
         next(err);
     }
 }
+
+export async function completeRideDetails(req, res, next) {
+    try {
+        res.status(200).json(await service.getCompleteRideDetails());
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function cancleRideDetails(req, res, next) {
+    try {
+        res.status(200).json(await service.getCancleRideDetails());
+    } catch (err) {
+        next(err);
+    }
+}

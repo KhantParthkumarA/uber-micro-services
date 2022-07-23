@@ -1,5 +1,5 @@
 import { success, ExistsError } from "iyasunday";
-const { Product, Subscription } = require('./model')
+const { Product, Subscription, ProductType } = require('./model')
 const { createPlan, deletePlanById, retrievePlan, addPrice } = require('./stripeService');
 const { dataTable } = require('./../../utils/constant');
 const { getSearchRegexp } = require('./../../utils/util');
@@ -44,7 +44,7 @@ export async function getProduct(id) {
   try {
     const product = await Product.findOne({ productID: id });
     if (!product) {
-      throw new ExistsError(`${body.productID} product not Exist`);
+      throw new ExistsError(`${id} product not Exist`);
     }
     return {
       success,
@@ -204,3 +204,80 @@ export async function updateSubscription(id, body) {
 
 
 
+
+
+export async function createProductType(body) {
+  try {
+    const isExist = await ProductType.findOne({ productType: body.productType });
+    if (isExist) {
+      throw new ExistsError(`${body.productType} already Exist`);
+    }
+
+    const productType = await ProductType.create(body);
+
+    return {
+      success,
+      message: `You have successfully created your productType`,
+      data: productType,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function getAllProductType() {
+  try {
+
+    const productType = await ProductType.find();
+    return {
+      success,
+      message: `You have successfully get all productType`,
+      data: productType,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function getProductType(id) {
+  try {
+    const productType = await ProductType.findOne({ _id: id });
+    if (!productType) {
+      throw new ExistsError(`${id} productType not Exist`);
+    }
+    return {
+      success,
+      message: `You have successfully get your productType`,
+      data: productType,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function deleteProductType(id) {
+  try {
+    const productType = await ProductType.deleteOne({ _id: id });
+
+    return {
+      success,
+      message: `You have successfully delete your productType`,
+      data: productType,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function updateProductType(id, body) {
+  try {
+    const productType = await ProductType.findOneAndUpdate({ _id: id }, { ...body });
+    return {
+      success,
+      message: `You have successfully update your productType`,
+      data: productType,
+    };
+  } catch (err) {
+    throw err;
+  }
+}

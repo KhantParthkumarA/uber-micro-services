@@ -11,9 +11,26 @@ const OrderSchema = new mongoose.Schema({
         freeMinute: Number,
         charge: Number
     },
+    paymentMethod: {
+        type: String,
+        default: "CASH"
+    },
     status: {
         type: String,
-        enum: ['CONFIRMED', 'CANCLE']
+        enum: ["PICKUP", "STARTRIDE", "CANCLERIDE", "ARRIVING"]
+    },
+    isCompleted: {
+        type: Boolean
+    },
+    isConfirmByDriver: {
+        type: Boolean
+    },
+    cancleOrder: {
+        cancleBy: {
+            type: String,
+            enum: ['DRIVER', 'RIDER']
+        },
+        reason: String
     },
     rideStartTime: {
         type: Date
@@ -31,6 +48,19 @@ const OrderSchema = new mongoose.Schema({
     updatedAt: {
         type: Date
     }
+})
+
+OrderSchema.pre('save', function (next) {
+    if (this.price) {
+        this.price = Math.round(this.price);
+    }
+    next();
+})
+OrderSchema.pre('update', function (next) {
+    if (this.price) {
+        this.price = Math.round(this.price);
+    }
+    next();
 })
 
 const RiderSchema = mongoose.Schema({

@@ -29,3 +29,28 @@ export async function getLiveLocationRider() {
         throw err;
     }
 }
+
+export async function getCompleteRideDetails() {
+    try {
+        const rideDetail = await Order.find({ isCompleted: true });
+        return {
+            success,
+            message: `You have successfully get Complete Ride Details`,
+            data: rideDetail,
+        };
+    } catch (err) {
+        throw err;
+    }
+}
+export async function getCancleRideDetails() {
+    try {
+        const rideDetail = await Order.find({ status: "CANCLE" }, { _id: 1, cancleOrder: 1, status: 1 });
+        return {
+            success,
+            message: `You have successfully get Cancle Ride Details`,
+            data: rideDetail,
+        };
+    } catch (err) {
+        throw err;
+    }
+}

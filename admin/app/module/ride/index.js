@@ -2,12 +2,16 @@
 const { Router } = require("express");
 const {
     scheduleRide,
-    liveLocationRider
+    liveLocationRider,
+    completeRideDetails,
+    cancleRideDetails
 } = require('./controller');
+const { verifyLogin } = require('./../../routes/auth-middleware');
 const route = Router();
 
-
-route.get("/scheduleRide", scheduleRide)
-route.get("/rider/liveLocation", liveLocationRider);
+route.get("/cancleRide", verifyLogin, cancleRideDetails)
+route.get("/completeRide", verifyLogin, completeRideDetails);
+route.get("/scheduleRide", verifyLogin, scheduleRide)
+route.get("/rider/liveLocation", verifyLogin, liveLocationRider);
 
 module.exports = route;

@@ -19,6 +19,10 @@ const ProductSchema = mongoose.Schema({
     cancellation_fee: Number,
     currency_code: String
   },
+  productType: {
+    type: Schema.Types.ObjectId,
+    'ref': 'ProductType'
+  },
   image: String,
   cash_enabled: Boolean,
   shared: Boolean,
@@ -30,7 +34,16 @@ const ProductSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  vehicleDetails: {
+    type: String,
+    name: String,
+    modelName: String,
+    platNo: String,
+    color: String,
+    handicapAccess: Boolean
+  }
 });
+
 
 
 const SubscriptionSchema = new mongoose.Schema({
@@ -54,16 +67,35 @@ const SubscriptionSchema = new mongoose.Schema({
   live_location: {
     lat: String,
     lng: String
-  },
-  status: {
-
   }
 
 })
 
+const productTypeSchema = new mongoose.Schema({
+  productType: {
+    type: String,
+    enum: ["auto", "premium", "luxuary"]
+  },
+  description: String,
+  capacity: Number,
+  service_fees: {
+    type: Array
+  },
+  cost_per_minute: Number,
+  distance_unit: String,
+  minimum: Number,
+  cost_per_distance: Number,
+  basePrice: Number,
+  cancellation_fee: Number,
+  currency_code: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  }
+})
 
 
 const Product = mongoose.model("Product", ProductSchema);
 const Subscription = mongoose.model("Subscription", SubscriptionSchema)
-
-module.exports = { Product, Subscription }
+const ProductType = mongoose.model("ProductType", productTypeSchema)
+module.exports = { Product, Subscription, ProductType }

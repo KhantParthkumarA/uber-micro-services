@@ -2,12 +2,14 @@ const { errorMessage } = require("iyasunday");
 const product = require("../module/product");
 const driver = require('./../module/driver');
 const ride = require('./../module/ride');
+const user = require('./../module/user');
 
 module.exports = (app) => {
   const version = "/v1/admin";
   app.use(version, product);
   app.use(version, driver);
   app.use(version, ride);
+  app.use(version, user);
 
   app.use((err, req, res, next) => {
     if (err) {
