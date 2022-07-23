@@ -17,9 +17,12 @@ const OrderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['CONFIRMED', 'CANCLE']
+        enum: ["PICKUP", "STARTRIDE", "CANCLERIDE", "ARRIVING"]
     },
     isCompleted: {
+        type: Boolean
+    },
+    isConfirmByDriver: {
         type: Boolean
     },
     cancleOrder: {

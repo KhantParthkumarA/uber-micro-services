@@ -92,3 +92,43 @@ export async function subscribePlan(req, res, next) {
 }
 
 
+
+
+export async function createProductType(req, res, next) {
+  try {
+    res.status(200).json(await service.createProductType(req.body));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getAllProductType(req, res, next) {
+  try {
+    res.status(200).json(await service.getAllProductType());
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getProductType(req, res, next) {
+  try {
+    res.status(200).json(await service.getProductType(req.params.id));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteProductType(req, res, next) {
+  try {
+    res.status(200).json(await service.deleteProductType(req.params.id));
+  } catch (err) {
+    next(err);
+  }
+}
+export async function updateProductType(req, res, next) {
+  try {
+    res.status(200).json(await service.updateProductType(req.params.id, req.body));
+  } catch (err) {
+    next(err);
+  }
+}

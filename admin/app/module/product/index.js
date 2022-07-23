@@ -11,6 +11,11 @@ const { createProduct,
     getSubscription,
     updateSubscription,
     subscribePlan,
+    createProductType,
+    deleteProductType,
+    getAllProductType,
+    getProductType,
+    updateProductType
 } = require('./controller');
 const { verifyLogin } = require('./../../routes/auth-middleware')
 const route = Router();
@@ -34,4 +39,11 @@ route.delete("/subscription/:id", verifyLogin, deleteSubscription);
 route.patch("/subscription/:id", verifyLogin, updateSubscription);
 route.post('/subscribePlan', verifyLogin, subscribePlan)
 
+
+
+route.post("/productType", verifyLogin, createProductType);
+route.get("/productType/:id", verifyLogin, getProductType)
+route.get("/productType", verifyLogin, getAllProductType);
+route.delete("/productType/:id", verifyLogin, deleteProductType);
+route.patch("/productType/:id", verifyLogin, updateProductType);
 module.exports = route;

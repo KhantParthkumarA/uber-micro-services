@@ -1,0 +1,27 @@
+{
+  "name": "cva-insurance",
+  "version": "1.0.0",
+  "description": "an insurance technology platform",
+  "main": "index.js",
+  "module": "main.js",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config index.js",
+    "prod": "node -r dotenv/config index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "insurtech"
+  ],
+  "author": "Abiodun",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^14.3.2",
+    "esm": "^3.2.25",
+    "express": "^4.18.1",
+    "iyasunday": "^1.1.4",
+    "joi": "^17.6.0",
+    "mongoose": "^6.4.6",
+    "nodemon": "^2.0.19"
+  }
+}

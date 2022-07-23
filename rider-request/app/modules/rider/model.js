@@ -125,6 +125,14 @@ const ProductSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  vehicleDetails: {
+    type: String,
+    name: String,
+    modelName: String,
+    platNo: String,
+    color: String,
+    handicapAccess: Boolean
   }
 });
 
@@ -193,6 +201,7 @@ const NotificationsSchema = new mongoose.Schema({
   }
 }, { strict: 'throw' })
 
+
 const OrderSchema = new mongoose.Schema({
   riderId: { type: Schema.Types.ObjectId, ref: 'Rider' },
   driverId: { type: Schema.Types.ObjectId, ref: 'Driver' },
@@ -210,9 +219,12 @@ const OrderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['CONFIRMED', 'CANCLE']
+    enum: ["PICKUP", "STARTRIDE", "CANCLERIDE", "ARRIVING"]
   },
   isCompleted: {
+    type: Boolean
+  },
+  isConfirmByDriver: {
     type: Boolean
   },
   cancleOrder: {
@@ -252,6 +264,7 @@ OrderSchema.pre('update', function (next) {
   }
   next();
 })
+
 const DriverSchema = new mongoose.Schema({
   "firstName": String,
   "lastName": String,
