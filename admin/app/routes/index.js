@@ -1,8 +1,8 @@
 const { errorMessage } = require("iyasunday");
-const product = require("../module/product");
-const driver = require('./../module/driver');
-const ride = require('./../module/ride');
-const user = require('./../module/user');
+const product = require("../module/routes/product.route");
+const driver = require('../module/routes/driver.routes');
+const ride = require('../module/routes/ride.route');
+const user = require('../module/routes/user.route');
 
 module.exports = (app) => {
   const version = "/v1/admin";

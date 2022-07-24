@@ -8,6 +8,7 @@ connectDB();
 const app = express();
 middlewares(app);
 routes(app);
+// require('./app/script/add-admin')
 
 (async () => {
     try {

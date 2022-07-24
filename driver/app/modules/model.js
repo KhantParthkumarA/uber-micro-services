@@ -34,14 +34,6 @@ const ProductSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  vehicleDetails: {
-    type: String,
-    name: String,
-    modelName: String,
-    platNo: String,
-    color: String,
-    handicapAccess: Boolean
-  }
 });
 
 
@@ -73,11 +65,23 @@ const DriverSchema = new mongoose.Schema({
   updatedAt: {
     type: Date
   },
-  liveLocation: Object,
   drive_status: {
     type: String,
     enum: ["AVAILABLE", "WAY_TO_PICKUP", "START_RIDE", "ENROUTE_TO_COMPLETE_RIDE"]
-  }
+  },
+  vehicleDetails: [{
+    type: String,
+    name: String,
+    modelName: String,
+    platNo: String,
+    color: String,
+    handicapAccess: Boolean,
+    primary: Boolean
+  }],
+  pushTokens: [{
+    deviceId: String,
+    token: String
+  }],
 })
 
 
@@ -131,9 +135,25 @@ const OrderSchema = new mongoose.Schema({
   }
 })
 
+const NotificationsSchema = new mongoose.Schema({
+  notification: {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+  },
+  type: { type: String, required: true },
+  riderId: { type: Schema.Types.ObjectId, ref: 'Rider', index: true },
+  driverId: { type: Schema.Types.ObjectId, ref: 'Driver', index: true },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}, { strict: 'throw' })
+
 const Product = mongoose.model('Product', ProductSchema);
 const Driver = mongoose.model('Driver', DriverSchema);
 const Order = mongoose.model('Order', OrderSchema);
+const Notifications = mongoose.model("Notifications", NotificationsSchema)
 
-module.exports = { Product, Driver, Order };
+
+export default { Product, Driver, Order, Notifications };
 

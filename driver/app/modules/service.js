@@ -12,7 +12,7 @@ export async function updateVehicleDetail(driverId, productId, body) {
       const product = await Product.findOne({ _id: productId })
 
       if (product._id === driver.product_id) {
-        res = await Product.update({ _id: productId }, { $set: { vehicleDetails: body } })
+        res = await Driver.update({ _id: productId }, { $set: { vehicleDetails: body }, productId })
       }
     }
     else {
@@ -30,9 +30,29 @@ export async function updateVehicleDetail(driverId, productId, body) {
   }
 };
 
+export async function updateETA(driverId, body) {
+  try {
+    const driver = await Driver.findOne({ _id: driverId });
+    let res;
+    if (driver.status === "APPROVE") {
+        res = await Driver.update({ _id: driverId }, { $set: { eta: body } })
+    }
+    else {
+      throw new Error("Driver not approve");
+    }
+
+    return {
+      success,
+      message: `ETA detail update Successfully`,
+      data: res,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
 export async function cancleRide(driverId, orderId, body) {
   try {
-
     let obj = {
       cancleBy: "DRIVER",
       reason: body.reason

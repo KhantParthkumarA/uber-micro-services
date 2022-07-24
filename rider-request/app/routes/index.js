@@ -1,10 +1,8 @@
 import { errorMessage } from "iyasunday";
-// import Insurance from "../modules/insurancePackage";
-import Rider from "../modules/rider";
+import Rider from "../modules/routes";
 export default (app) => {
   const version = "/v1";
   app.use(version, Rider);
-
 
   app.use((err, req, res, next) => {
     if (err) {

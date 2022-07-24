@@ -23,6 +23,15 @@ export async function updateStatus(req, res, next) {
         next(err);
     }
 }
+
+export async function updateETA(req, res, next) {
+    try {
+        return res.status(200).json(await service.updateStatus(req.params.driverId, req.params.orderId, req.body))
+    } catch (err) {
+        next(err);
+    }
+}
+
 export async function craeteOrderAndConfirmRide(req, res, next) {
     try {
         return res.status(200).json(await service.createOrder(req.body))
