@@ -137,7 +137,7 @@ export async function priceEstimate(body) {
     let ride_distance = distance.split(" ")[0];
     let ride_duration = duration.split(" ")[0];
     let booking_fees = 3;
-    let Surge_Price = 1;
+    let Surge_Price;
 
     const setting = await Setting.find().limit(1);
     const surge_detail = setting.surge_detail;
@@ -151,7 +151,13 @@ export async function priceEstimate(body) {
       let cost_per_minute = product[j].priceDetails.cost_per_minute;
       let cost_per_distance = product[j].priceDetails.cost_per_distance;
 
-      finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees;
+      if (Surge_Price) {
+        finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees;
+
+      } else {
+        finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance) + booking_fees;
+
+      }
 
       let commission = product[j].priceDetails.company_commission;
       finalFare = finalFare + (finalFare * commission) / 100;
@@ -237,7 +243,12 @@ const tollFees = async (origin, destinations, travel_mode, emission_type, toll_p
 
 const findCost = (baseFare, ride_duration, cost_per_minute, ride_distance, cost_per_distance, Surge_Price, booking_fees, toll) => {
 
-  let finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees + toll;
+  let finalFare
+  if (Surge_Price) {
+    finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees + toll;
+  } else {
+    finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance) + booking_fees + toll;
+  }
   return finalFare;
 }
 
@@ -280,7 +291,7 @@ export async function rideRequestEstimate(body) {
     }
 
     const booking_fees = 10; // right now booking fees is static
-    let Surge_Price = 1;
+    let Surge_Price;
 
     const setting = await Setting.find().limit(1);
     const surge_detail = setting.surge_detail;
@@ -345,7 +356,6 @@ export async function rideRequest(body) {
     const product = await Product.findOne({ productID: product_id });
     // const driverDetail = await Driver.find({ product_id: product._id });
     const status = "processing";  // provide status of request
-    const vehicle = product; // vehicle details
     // const driver = driverDetail;    // you hvae to provide driver details
     const location = {
       start: [start_lat, start_lng],
@@ -353,7 +363,9 @@ export async function rideRequest(body) {
     };
     // const eta = fair_details.pickup_estimate;
 
-    let Surge_Price = 1; // if night time then you have to set
+
+
+    let Surge_Price; // if night time then you have to set
     const setting = await Setting.find().limit(1);
     const surge_detail = setting.surge_detail;
     const hour = new Date().getHours();
@@ -363,7 +375,6 @@ export async function rideRequest(body) {
     let newRequests = new Requests();
 
     newRequests.status = status;
-    newRequests.vehicle = vehicle;
     // newRequests.driver = driver;  // we will notify nearest driver first and we will update request model again when driver accept 
     newRequests.location = location;
     // newRequests.eta = eta;   // we will update it in request model when any driver accept ride
@@ -764,3 +775,149 @@ export async function updateOrder(body, id) {
   }
 };
 
+export async function cancleRide(riderId, orderId, body) {
+  try {
+    let obj = {
+      cancleBy: "RIDER",
+      reason: body.reason
+    }
+    const cancle = await Order.update({ _id: orderId, riderId: riderId }, {
+      $set: {
+        cancleOrder: obj,
+        status: "CANCLERIDE"
+      }
+    })
+    return {
+      success,
+      message: `Ride cancle Successfully`,
+      cancle
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function getEta(body) {
+  try {
+
+    const start_lat = body.start_lat;
+    const start_lng = body.start_lng;
+    const end_lat = body.end_lat;
+    const end_lng = body.end_lng;
+    const time = distance_duration({ "lat": start_lat, "lng": start_lng }, { "lat": end_lat, "lng": end_lng })
+    return {
+      success,
+      message: `Ride ETA get Successfully`,
+      data: time.duration
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function rateDriver(riderId, body) {
+  try {
+    const rate = body.rate;
+    const driverId = body.driverId;
+    const description = body.description;
+
+    const driver = await Driver.find({ _id: driverId });
+    if (!driver) {
+      throw new Error("Driver not found");
+    }
+    let obj = {
+      "rate": rate,
+      "riderId": riderId,
+      "description": description
+    }
+    const rating = driver.rating;
+    rating.push(obj);
+    const update = await Driver.update({ _id: driverId }, { $set: { rating: rating } });
+
+    // const updateDriv
+
+    return {
+      success,
+      message: `Rider add feedback Successfully`,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function rideDetails(orderId) {
+  try {
+    const order = await Order.findOne({ _id: orderId }).populate('riderId').populate('driverId').populate('productId');
+    // const updateDriv
+
+    return {
+      success,
+      message: `Ride details get Successfully`,
+      order
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+export async function fareCalculation(productId, body) {
+  try {
+    const start_lat = body.start_lat;
+    const start_lng = body.start_lng;
+    const end_lat = body.end_lat;
+    const end_lng = body.end_lng;
+
+    const x = distance_duration({ "lat": start_lat, "lng": start_lng }, { "lat": end_lat, "lng": end_lng })
+
+    const product = await Product.findOne({ _id: productId });
+    let response = [];
+    let finalFare = 0;
+    const distance = x.text;
+    const duration = x.text;
+    let ride_distance = distance.split(" ")[0];
+    let ride_duration = duration.split(" ")[0];
+    let booking_fees = 3; //now its sattic
+    let Surge_Price;
+
+    const setting = await Setting.find().limit(1);
+    const surge_detail = setting.surge_detail;
+    const hour = new Date().getHours();
+    if (hour > surge_detail.from && hour < surge_detail.to) {
+      Surge_Price = surge_detail.price;
+    }
+
+    let baseFare = product.priceDetails.base;
+    let cost_per_minute = product.priceDetails.cost_per_minute;
+    let cost_per_distance = product.priceDetails.cost_per_distance;
+
+    if (Surge_Price) {
+      finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance * Surge_Price) + booking_fees;
+
+    } else {
+      finalFare = baseFare + (ride_duration * cost_per_minute) + (ride_distance * cost_per_distance) + booking_fees;
+
+    }
+
+    let commission = product.priceDetails.company_commission;
+    finalFare = finalFare + (finalFare * commission) / 100;
+
+
+    return {
+      success,
+      message: `Ride fare get Successfully`,
+      length: response.length,
+      data: {
+        product: product,
+        "priceEstimate": finalFare.toFixed(2),
+        "ride_distance": distance,
+        "ride_duration": duration
+      },
+
+    };
+  } catch (err) {
+    throw err;
+  }
+};

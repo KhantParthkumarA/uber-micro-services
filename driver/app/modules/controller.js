@@ -34,7 +34,7 @@ export async function updateETA(req, res, next) {
 
 export async function craeteOrderAndConfirmRide(req, res, next) {
     try {
-        return res.status(200).json(await service.createOrder(req.body))
+        return res.status(200).json(await service.confirmRequest(req.body))
     } catch (err) {
         next(err);
     }

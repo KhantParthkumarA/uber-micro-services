@@ -1,5 +1,5 @@
 import { success, ExistsError, AuthenticationError } from "iyasunday";
-const { Driver, Product, Order } = require('./model')
+const { Driver, Product, Order, Requests } = require('./model')
 
 
 
@@ -35,7 +35,7 @@ export async function updateETA(driverId, body) {
     const driver = await Driver.findOne({ _id: driverId });
     let res;
     if (driver.status === "APPROVE") {
-        res = await Driver.update({ _id: driverId }, { $set: { eta: body } })
+      res = await Driver.update({ _id: driverId }, { $set: { eta: body } })
     }
     else {
       throw new Error("Driver not approve");
@@ -60,7 +60,7 @@ export async function cancleRide(driverId, orderId, body) {
     const cancle = await Order.update({ _id: orderId, driverId: driverId }, {
       $set: {
         cancleOrder: obj,
-        staus: "CANCLE"
+        status: "CANCLERIDE"
       }
     })
 
@@ -76,11 +76,6 @@ export async function cancleRide(driverId, orderId, body) {
 
 export async function updateStatus(driverId, orderId, body) {
   try {
-
-    let obj = {
-      cancleBy: "DRIVER",
-      reason: body.reason
-    }
     const statusUpdate = await Order.update({ _id: orderId, driverId: driverId }, {
       $set: {
         status: body.status
@@ -97,8 +92,16 @@ export async function updateStatus(driverId, orderId, body) {
   }
 };
 
-export async function createOrder(body) {
+export async function confirmRequest(body) {
   try {
+
+    const driverId = body.driverId;
+    const productId = body.productId;
+    const fairId = body.fairId;
+    const requestId = body.requestId;
+
+    const updateReq = await Requests.update({ _id: requestId }, { $set: { driverId: driverId, productId: productId, fairId: fairId } });
+
     body.isConfirmByDriver = true;
     const order = await Order.create(body)
 

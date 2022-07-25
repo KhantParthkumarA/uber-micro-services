@@ -177,3 +177,46 @@ export async function updateOrder(req, res, next) {
         next(err);
     }
 }
+
+export async function cancleRide(req, res, next) {
+    try {
+        return res.status(200).json(await service.cancleRide(req.params.riderId, req.params.orderId, req.body));
+    } catch (err) {
+        next(err);
+    }
+}
+
+
+export async function rideEta(req, res, next) {
+    try {
+        return res.status(200).json(await service.getEta(req.body));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function rateDriver(req, res, next) {
+    try {
+        return res.status(200).json(await service.rateDriver(req.params.riderId, req.body));
+    } catch (err) {
+        next(err);
+    }
+}
+
+
+export async function rideDetails(req, res, next) {
+    try {
+        return res.status(200).json(await service.rideDetails(req.params.orderId));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function fareCalculation(req, res, next) {
+    try {
+        return res.status(200).json(await service.fareCalculation(req.params.productId, req.body));
+    } catch (err) {
+        next(err);
+    }
+}
+

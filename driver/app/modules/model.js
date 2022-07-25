@@ -43,7 +43,15 @@ const DriverSchema = new mongoose.Schema({
   "email": String,
   "phoneNumber": Number,
   "picture": String,
-  "rating": Number,
+  "rating":
+    [
+      {
+        riderId: Schema.Types.ObjectId,
+        rate: Number,
+        description: String
+      }
+    ]
+  ,
   "DOB": Date,
   "status": {
     type: String,
@@ -149,11 +157,28 @@ const NotificationsSchema = new mongoose.Schema({
   }
 }, { strict: 'throw' })
 
+const RequestSchema = new mongoose.Schema({
+  productID: { type: Schema.Types.ObjectId, ref: 'Product' },
+  rider: { type: Schema.Types.ObjectId, ref: 'Rider' },
+  status: String,
+  driver: { type: Schema.Types.ObjectId, ref: 'Driver' },
+  location: Object,
+  eta: Number,
+  surge_multiplier: Number,
+  fair_id: { type: Schema.Types.ObjectId, ref: 'Fair' },
+  seat_count: Number,
+  waitingCharge: {
+    minute: Number,
+    freeMinute: Number,
+    charge: Number
+  }
+})
+
 const Product = mongoose.model('Product', ProductSchema);
 const Driver = mongoose.model('Driver', DriverSchema);
 const Order = mongoose.model('Order', OrderSchema);
 const Notifications = mongoose.model("Notifications", NotificationsSchema)
+const Requests = mongoose.model('Requests', RequestSchema);
 
-
-export default { Product, Driver, Order, Notifications };
+export default { Product, Driver, Order, Notifications, Requests };
 
