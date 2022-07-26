@@ -4,6 +4,9 @@ import * as controller from './controller';
 import { driverPassport } from '../routes/middleware'
 const route = Router();
 
+route.post('/signup', controller.signup);
+route.post('/login', controller.login);
+
 route.patch('/updateVehicleDetails/:driverId/:productId', driverPassport, controller.updateVehicleDetail);
 route.patch('/cancleRide/:driverId/:orderId', driverPassport, controller.cancleRide);
 route.patch('/updateRideStatus/:driverId/:orderId', driverPassport, controller.updateStatus);

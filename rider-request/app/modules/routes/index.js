@@ -33,10 +33,12 @@ route.get('/order', riderPassport, controller.getAllOrder);
 route.patch('/order/:id', riderPassport, controller.updateOrder);
 
 route.patch('/cancleRide/:riderId/:orderId', riderPassport, controller.cancleRide);
-route.get('/getRideETA', riderPassport, controller.rideEta);
-route.get('/rateDriver/:riderId', riderPassport, controller.rateDriver);
+route.post('/getRideETA', riderPassport, controller.rideEta);
+route.patch('/rateDriver/:riderId', riderPassport, controller.rateDriver);
 route.get('/shareRideDetails/:orderId', riderPassport, controller.rideDetails);
 route.get('/fareCalculation/:productId', riderPassport, controller.fareCalculation);
+
+route.patch('/saveRiderLocation', riderPassport, controller.saveRiderLocation);
 export default route;
 
 

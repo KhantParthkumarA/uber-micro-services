@@ -185,10 +185,13 @@ export async function getDriverEarning(id) {
 export async function getDriverDetailWithRideHistory(id) {
     try {
         const driverDetails = await models.Driver.find();
-        await Promise.all(driverDetails.forEach(async el => {
-            const totalOrder = await Order({ driverId: el._id });
-            el.rideHistory = totalOrder;
-        }))
+        if (!driverDetails) {
+            await Promise.all(driverDetails.forEach(async el => {
+                const totalOrder = await models.Order.findOne({ driverId: el._id });
+                el.rideHistory = totalOrder;
+            }))
+        }
+
 
         return {
             success,

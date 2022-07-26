@@ -132,8 +132,8 @@ export async function priceEstimate(body) {
     // console.log(product);
     let response = [];
     let finalFare = 0;
-    const distance = x.text;
-    const duration = x.text;
+    const distance = x.distance.text;
+    const duration = x.duration.text;
     let ride_distance = distance.split(" ")[0];
     let ride_duration = duration.split(" ")[0];
     let booking_fees = 3;
@@ -192,7 +192,7 @@ export async function timeEstimate(body) {
     const x = distance_duration({ "lat": origin_lat, "lng": origin_lng }, { "lat": product_lat, "lng": product_lng })
 
     const product = await Product.findOne({ productID: productId });
-    const duration = x.text;
+    const duration = x.duration.text;
     let obj = { ...product._doc, "time_duration": duration };
 
     return {
@@ -870,13 +870,14 @@ export async function fareCalculation(productId, body) {
     const end_lat = body.end_lat;
     const end_lng = body.end_lng;
 
-    const x = distance_duration({ "lat": start_lat, "lng": start_lng }, { "lat": end_lat, "lng": end_lng })
-
+    const x = await distance_duration({ "lat": start_lat, "lng": start_lng }, { "lat": end_lat, "lng": end_lng })
+    console.log(x);
     const product = await Product.findOne({ _id: productId });
     let response = [];
     let finalFare = 0;
-    const distance = x.text;
-    const duration = x.text;
+    const distance = x.distance.text;
+    const duration = x.duration.text;
+    console.log(distance);
     let ride_distance = distance.split(" ")[0];
     let ride_duration = duration.split(" ")[0];
     let booking_fees = 3; //now its sattic
@@ -916,6 +917,25 @@ export async function fareCalculation(productId, body) {
         "ride_duration": duration
       },
 
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function saveRiderLocation(riderId, body) {
+  try {
+    const rider = await Rider.findOne({ _id: riderId });
+
+    const savedLocation = rider.savedLocation;
+    savedLocation.push(body.location);
+
+    const updateRider = await Rider.update({ _id: riderId }, { $set: { savedLocation: savedLocation } });
+
+    return {
+      success,
+      message: `Location add Successfully`,
+      updateRider
     };
   } catch (err) {
     throw err;

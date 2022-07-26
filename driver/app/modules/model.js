@@ -41,6 +41,7 @@ const DriverSchema = new mongoose.Schema({
   "firstName": String,
   "lastName": String,
   "email": String,
+  "password": String,
   "phoneNumber": Number,
   "picture": String,
   "rating":
@@ -140,6 +141,10 @@ const OrderSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date
+  },
+  rideForSomeone: {
+    passengerName: String,
+    passengerPhoneNumber: Number
   }
 })
 

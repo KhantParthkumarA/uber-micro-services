@@ -220,3 +220,10 @@ export async function fareCalculation(req, res, next) {
     }
 }
 
+export async function saveRiderLocation(req, res, next) {
+    try {
+        return res.status(200).json(await service.saveRiderLocation(req.params.riderId, req.body));
+    } catch (err) {
+        next(err);
+    }
+}

@@ -1,5 +1,70 @@
 import { success, ExistsError, AuthenticationError } from "iyasunday";
 const { Driver, Product, Order, Requests } = require('./model')
+const jwt = require('jsonwebtoken');
+
+
+const setAuth = async (driver) => {
+  const token = await jwt.sign({ id: driver._id }, process.env.JWT_SECRET);
+  return token;
+}
+
+export async function signup(body) {
+  try {
+    const isExist = await Driver.findOne({ email: body.email });
+    if (isExist) {
+      throw new ExistsError(`${body.email} already Exist`);
+    }
+    if (body.phoneNumber) {
+      const phoneExist = await Driver.findOne({ phoneNumber: body.phoneNumber });
+      if (phoneExist) {
+        throw new ExistsError("Driver with Phone Number already exists");
+      }
+
+    }
+
+    const driver = await Driver.create({ ...body });
+    return {
+      success,
+      message: `You have successfully created your account`,
+      data: {
+        token: await setAuth(driver),
+        driver
+      }
+
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+export async function login(body) {
+  try {
+    const email = body.email;
+    const password = body.password;
+
+    const driver = await Driver.findOne({ email: email }).select('+password');
+
+    if (!driver) {
+      throw new Error("Incorrect email and password");
+    }
+
+    const correct = await driver.correctPassword(password, driver.password);
+
+    if (!correct) {
+      throw new Error("Incorrect email and password");
+    }
+
+
+    return {
+      success,
+      message: `You have successfully login`,
+      data: await setAuth(driver),
+    };
+  } catch (err) {
+    throw err;
+  }
+}
 
 
 

@@ -79,6 +79,12 @@ const RiderSchema = mongoose.Schema({
   favouriteDriver: Array,
   stripeCustomerId: String,
   liveLocation: Object,
+  savedLocation: [
+    {
+      lat: Number,
+      lng: Number
+    }
+  ]
 });
 
 RiderSchema.pre('save', async function (next) {
@@ -247,6 +253,10 @@ const OrderSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date
+  },
+  rideForSomeone: {
+    passengerName: String,
+    passengerPhoneNumber: Number
   }
 })
 
