@@ -227,3 +227,13 @@ export async function saveRiderLocation(req, res, next) {
         next(err);
     }
 }
+
+
+export async function pickupNotification(req, res, next) {
+    try {
+        return res.status(200).json(await service.pickUpNotification(req.params.riderId, req.params.driverId));
+    } catch (err) {
+        next(err);
+    }
+}
+

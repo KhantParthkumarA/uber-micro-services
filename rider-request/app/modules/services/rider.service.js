@@ -941,3 +941,34 @@ export async function saveRiderLocation(riderId, body) {
     throw err;
   }
 };
+
+
+export async function pickUpNotification(riderId, driverId) {
+  try {
+    const rider = await Rider.findOne({ _id: riderId });
+    const riderLoc = rider.liveLocation;
+
+    const driver = await Driver.findOne({ _id: driverId });
+    const driverLoc = driver.liveLocation;
+    const x = distance_duration({ "lat": riderLoc.lat, "lng": riderLoc.lng }, { "lat": driverLoc.lat, "lng": driverLoc.lng });
+
+    const duration = x.duration.text;
+    const durationValue = x.duration.value;
+
+    if (durationValue < 10) {
+      //send notification 
+      const notificationTitle = "Driver arriving for pickup";
+      const notificationDescription = "Driver less than 10 minute away from your location";
+      await notificationService.createNotification({ riderId: riderId, type: 'Driver arriving', notification: { title: notificationTitle, description: notificationDescription } })
+      notificationService.fetchNotifications(io.sockets, { riderId: riderId })
+    }
+
+    return {
+      success,
+      message: `pickup notification`,
+      duration: duration
+    };
+  } catch (err) {
+    throw err;
+  }
+};

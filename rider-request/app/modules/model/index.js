@@ -78,7 +78,10 @@ const RiderSchema = mongoose.Schema({
   }],
   favouriteDriver: Array,
   stripeCustomerId: String,
-  liveLocation: Object,
+  liveLocation: {
+    lat: Number,
+    lng: Number
+  },
   savedLocation: [
     {
       lat: Number,
@@ -309,7 +312,10 @@ const DriverSchema = new mongoose.Schema({
   updatedAt: {
     type: Date
   },
-  liveLocation: Object,
+  liveLocation: {
+    lat: Number,
+    lng: Number
+  },
   drive_status: {
     type: String,
     enum: ["AVAILABLE", "WAY_TO_PICKUP", "START_RIDE", "ENROUTE_TO_COMPLETE_RIDE"]

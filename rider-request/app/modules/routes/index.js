@@ -39,6 +39,7 @@ route.get('/shareRideDetails/:orderId', riderPassport, controller.rideDetails);
 route.get('/fareCalculation/:productId', riderPassport, controller.fareCalculation);
 
 route.patch('/saveRiderLocation', riderPassport, controller.saveRiderLocation);
+route.get('/pickupNotification', riderPassport, controller.pickupNotification);
 export default route;
 
 
