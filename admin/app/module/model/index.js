@@ -65,7 +65,7 @@ const SubscriptionSchema = new mongoose.Schema({
 const productTypeSchema = new mongoose.Schema({
     productType: {
         type: String,
-        enum: ["auto", "premium", "luxuary"]
+        enum: ["auto", "premium", "luxuary", "SUV", "SEDAN", "HATCHBACK"]
     },
     description: String,
     capacity: Number,
@@ -181,6 +181,10 @@ const OrderSchema = new mongoose.Schema({
     },
     updatedAt: {
         type: Date
+    },
+    rideForSomeone: {
+        passengerName: String,
+        passengerPhoneNumber: Number
     }
 })
 
@@ -209,19 +213,21 @@ const RiderSchema = mongoose.Schema({
             /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
             "Please fill a valid email address",
         ],
-        unique: [true, "User with email already exists"],
+        unique: [true, "Rider with email already exists"],
     },
     phoneNumber: {
         type: String,
-        unique: [true, "User with phone number already exists"],
+        unique: [true, "Rider with phone number already exists"],
     },
     password: {
         type: String,
         minlength: 6,
         select: false,
     },
-    userType: {
-        type: String
+    type: {
+        type: String,
+        enum: ["RIDER"],
+        default: "RIDER"
     },
     status: {
         type: String,
@@ -253,6 +259,9 @@ const RiderSchema = mongoose.Schema({
     verificationCode: {
         type: Number
     },
+    verified: {
+        type: Boolean
+    },
     oAuth: {
         clientId: {
             type: String
@@ -264,15 +273,20 @@ const RiderSchema = mongoose.Schema({
     otp: {
         type: Number
     },
-    favouriteDriver: Array,
-    stripeCustomerId: String,
-    liveLocation: Object,
     pushTokens: [{
         deviceId: String,
         token: String
     }],
+    favouriteDriver: Array,
+    stripeCustomerId: String,
+    liveLocation: Object,
+    savedLocation: [
+        {
+            lat: Number,
+            lng: Number
+        }
+    ]
 });
-
 RiderSchema.pre('save', async function (next) {
     // if password is not modifies
     if (!this.isModified('password')) {

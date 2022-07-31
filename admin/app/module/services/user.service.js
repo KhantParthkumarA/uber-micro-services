@@ -19,7 +19,7 @@ export async function signup(body) {
             throw new ExistsError("User with Phone Number already exists");
         }
 
-        const user = await User.create({ ...body, type: "ADMIN", verified: true });
+        const user = await models.User.create({ ...body, type: "ADMIN", verified: true });
         return {
             success,
             message: `You have successfully created your account`,

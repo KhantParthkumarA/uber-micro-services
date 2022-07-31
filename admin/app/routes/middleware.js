@@ -48,21 +48,21 @@ export default app => {
 
 export const adminPassport = async (req, res, next) => {
   try {
-    console.log('getereteet')
-    const accessToken = req.headers['x-access-token'];
-    let admin;
-    if (!accessToken) throw new Error("token missing!");
+    // console.log('getereteet')
+    // const accessToken = req.headers['x-access-token'];
+    // let admin;
+    // if (!accessToken) throw new Error("token missing!");
 
-    const details = await verifyToken(accessToken)
-    console.log('getereteet', details)
+    // const details = await verifyToken(accessToken)
+    // console.log('getereteet', details)
 
-    admin = await models.User.findOne({ _id: details.id, type: "ADMIN" })
-    if (!admin) {
-      throw new Error("admin not authorised.");
-    }
-    if (!admin.verified) {
-      throw new Error("admin not verified");
-    }
+    // admin = await models.User.findOne({ _id: details.id, type: "ADMIN" })
+    // if (!admin) {
+    //   throw new Error("admin not authorised.");
+    // }
+    // if (!admin.verified) {
+    //   throw new Error("admin not verified");
+    // }
     next();
   } catch (error) {
     next(error);

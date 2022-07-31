@@ -79,19 +79,19 @@ const customerIoAuth = async (socket, next) => {
 
 export const riderPassport = async (req, res, next) => {
   try {
-    const accessToken = req.headers['x-access-token'];
-    let rider;
-    if (!accessToken) throw new Error("token missing!");
+    // const accessToken = req.headers['x-access-token'];
+    // let rider;
+    // if (!accessToken) throw new Error("token missing!");
 
-    const details = await verifyToken(accessToken)
-    rider = await models.Rider.findOne({ _id: details.id, type: "RIDER" })
-    if (!rider) {
-      throw new Error("rider not authorised.");
-    }
-    if (!rider.verified) {
-      throw new Error("rider not verified");
-    }
-    req.user = rider
+    // const details = await verifyToken(accessToken)
+    // rider = await models.Rider.findOne({ _id: details.id, type: "RIDER" })
+    // if (!rider) {
+    //   throw new Error("rider not authorised.");
+    // }
+    // if (!rider.verified) {
+    //   throw new Error("rider not verified");
+    // }
+    // req.user = rider
     next();
   } catch (error) {
     next(error);

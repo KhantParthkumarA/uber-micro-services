@@ -78,7 +78,16 @@ const RiderSchema = mongoose.Schema({
   }],
   favouriteDriver: Array,
   stripeCustomerId: String,
-  liveLocation: Object,
+  liveLocation: {
+    lat: Number,
+    lng: Number
+  },
+  savedLocation: [
+    {
+      lat: Number,
+      lng: Number
+    }
+  ]
 });
 
 RiderSchema.pre('save', async function (next) {
@@ -144,21 +153,24 @@ const FairSchema = new mongoose.Schema({
 })
 
 const RequestSchema = new mongoose.Schema({
-  productID: Number,
-  rider: String,
+  productID: { type: Schema.Types.ObjectId, ref: 'Product' },
+  rider: { type: Schema.Types.ObjectId, ref: 'Rider' },
   status: String,
-  vehicle: Object,
-  driver: Object,
+  driver: { type: Schema.Types.ObjectId, ref: 'Driver' },
   location: Object,
   eta: Number,
   surge_multiplier: Number,
-  fair_id: String,
+  fair_id: { type: Schema.Types.ObjectId, ref: 'Fair' },
   seat_count: Number,
   waitingCharge: {
     minute: Number,
     freeMinute: Number,
     charge: Number
   }
+})
+
+RequestSchema.pre(/^find/, async function () {
+  this.populate({ path: 'fair_id' });
 })
 
 const SubscriptionSchema = new mongoose.Schema({
@@ -244,6 +256,10 @@ const OrderSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date
+  },
+  rideForSomeone: {
+    passengerName: String,
+    passengerPhoneNumber: Number
   }
 })
 
@@ -266,7 +282,15 @@ const DriverSchema = new mongoose.Schema({
   "email": String,
   "phoneNumber": Number,
   "picture": String,
-  "rating": Number,
+  "rating":
+    [
+      {
+        riderId: Schema.Types.ObjectId,
+        rate: Number,
+        description: String
+      }
+    ]
+  ,
   "DOB": Date,
   "status": {
     type: String,
@@ -288,7 +312,10 @@ const DriverSchema = new mongoose.Schema({
   updatedAt: {
     type: Date
   },
-  liveLocation: Object,
+  liveLocation: {
+    lat: Number,
+    lng: Number
+  },
   drive_status: {
     type: String,
     enum: ["AVAILABLE", "WAY_TO_PICKUP", "START_RIDE", "ENROUTE_TO_COMPLETE_RIDE"]
